@@ -14,9 +14,5 @@ setup(
     install_requires=REQUIREMENTS,
     tests_require=['pytest'],
     zip_safe=False,
-    include_package_data=True,
-    entry_points='''
-       [console_scripts]
-       liege=liege.cli:liege_cli
-    '''
+    include_package_data=True
 )
