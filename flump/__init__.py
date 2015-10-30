@@ -7,6 +7,8 @@ Currently missing content negotation
 http://jsonapi.org/format/#content-negotiation-servers, possible to be added in
 a later version
 """
+__version__ = "0.1.1"
+
 import logging
 
 from flask import Blueprint, request
