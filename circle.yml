@@ -1,0 +1,15 @@
+## Customize the virtual machine..
+machine:
+  timezone:
+    Europe/London
+  python:
+    version: 3.4.3
+
+## Customize dependencies..
+dependencies:
+  pre:
+    - pip install -r dev-requirements.txt
+
+test:
+  override:
+    - py.test test
