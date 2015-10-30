@@ -7,7 +7,7 @@ Currently missing content negotation
 http://jsonapi.org/format/#content-negotiation-servers, possible to be added in
 a later version
 """
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 import logging
 
@@ -39,9 +39,7 @@ class FlumpBlueprint(Blueprint):
 
         @self.before_request
         def do_logging():
-            logger = logging.getLogger(
-                'flump.view.{}'.format(view.resource_name)
-            )
+            logger = logging.getLogger('flump.view.{}'.format(self.name))
             logger.propagate = False
 
             debug_string = (
