@@ -181,7 +181,7 @@ class FlumpView:
         schema should provide a method for creating the entity using the
         `create_entity` function.
         """
-        entity_data, errors = self.post_schema().load(self._post_data)
+        entity_data, errors = self.post_schema().load(self.post_data)
         if errors:
             raise FlumpUnprocessableEntity(errors=errors)
 
