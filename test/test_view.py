@@ -171,7 +171,7 @@ class TestPost:
 
     def test_post_fails_if_an_id_is_specified(self, flask_client):
         data = {
-            'data': {'type': 'user', 'id': 1,
+            'data': {'type': 'user', 'id': '1',
                      'attributes': {'name': 'a', 'age': 26}}
         }
         response = _create_user(flask_client, data=data)

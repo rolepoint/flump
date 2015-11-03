@@ -1,7 +1,7 @@
 from collections import namedtuple
 
-from marshmallow import Schema, fields, post_load, pre_dump, pre_load
-from werkzeug.exceptions import Conflict, Forbidden
+from marshmallow import Schema, fields, post_load, pre_dump
+from werkzeug.exceptions import Conflict
 
 from .exceptions import FlumpUnprocessableEntity
 
@@ -18,18 +18,10 @@ def make_data_schema(resource_schema, only=None, partial=False):
     """
 
     class JsonApiSchema(Schema):
-        id = fields.Str(dump_only=True)
+        id = fields.Str()
         type = fields.Str(required=True)
         attributes = fields.Nested(resource_schema,
                                    required=True, only=only, partial=partial)
-
-        @pre_load
-        def raise_error_if_id_provided_on_load(self, data):
-            if 'id' in data:
-                raise Forbidden(
-                    'You must not specify an id when creating an entity'
-                )
-            return data
 
         @post_load
         def to_entity_data(self, data):
@@ -38,7 +30,7 @@ def make_data_schema(resource_schema, only=None, partial=False):
             namedtuple format. When loading we do not have an ID so this
             will be None.
             """
-            return EntityData(None, data['type'], data['attributes'])
+            return EntityData(data.get('id'), data['type'], data['attributes'])
 
         @pre_dump
         def add_id_to_schema(self, entity_data):

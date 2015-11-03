@@ -1,4 +1,6 @@
 from flask import request, jsonify
+from werkzeug.exceptions import Forbidden
+
 
 from ..exceptions import FlumpUnprocessableEntity
 from ..schemas import ResponseData, make_entity_schema
@@ -31,6 +33,11 @@ class Post:
         entity_data, errors = self.post_schema().load(self.post_data)
         if errors:
             raise FlumpUnprocessableEntity(errors=errors)
+
+        if entity_data.id is not None:
+            raise Forbidden(
+                'You must not specify an id when creating an entity'
+            )
 
         url = url_for('.{}'.format(self.resource_name), _external=True,
                       entity_id=entity_data.attributes.id, _method='GET',
