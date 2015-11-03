@@ -2,7 +2,7 @@ from flask import request, jsonify
 from werkzeug.exceptions import NotFound
 
 from ..exceptions import FlumpUnprocessableEntity
-from ..schemas import ResponseData, make_entity_schema
+from ..schemas import ResponseData, make_entity_schema, make_data_schema
 
 
 class Patch:
@@ -13,8 +13,13 @@ class Patch:
         being `partial`, i.e it will ignore missing fields during
         deserialization.
         """
-        return make_entity_schema(self.resource_schema, self.resource_name,
-                                  only=self.patch_fields, partial=True)
+        data_schema = make_data_schema(
+            self.resource_schema,
+            id_required=True, only=self.patch_fields, partial=True
+        )
+        return make_entity_schema(
+            self.resource_schema, self.resource_name, data_schema
+        )
 
     @property
     def patch_data(self):
