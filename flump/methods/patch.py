@@ -9,8 +9,7 @@ class Patch:
     @property
     def patch_schema(self):
         """
-        Builds a schema for PATCH requests. Passes the `entity` to the resource
-        schema as the existing_entity. Also specifies the resource_schema as
+        Builds a schema for PATCH requests. Specifies the resource_schema as
         being `partial`, i.e it will ignore missing fields during
         deserialization.
         """
