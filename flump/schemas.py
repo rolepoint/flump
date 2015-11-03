@@ -11,7 +11,7 @@ EntityData = namedtuple('EntityData', ('id', 'type', 'attributes'))
 ResponseData = namedtuple('ResponseData', ('data', 'links'))
 
 
-def make_data_schema(resource_schema, only=None):
+def make_data_schema(resource_schema, only=None, partial=False):
     """
     Constructs a Schema describing the main jsonapi format for the
     current `resource_schema`.
@@ -20,7 +20,8 @@ def make_data_schema(resource_schema, only=None):
     class JsonApiSchema(Schema):
         id = fields.Str(dump_only=True)
         type = fields.Str(required=True)
-        attributes = fields.Nested(resource_schema, required=True, only=only)
+        attributes = fields.Nested(resource_schema,
+                                   required=True, only=only, partial=partial)
 
         @pre_load
         def raise_error_if_id_provided_on_load(self, data):
@@ -66,12 +67,14 @@ def make_response_schema(resource_schema, only=None):
     return JsonApiResponseSchema
 
 
-def make_entity_schema(resource_schema, resource_name, only=None):
+def make_entity_schema(
+    resource_schema, resource_name, only=None, partial=False
+):
     """
     Constructs a schema describing the format of POST/PATCH requests for
     jsonapi. Provides automatic error checking for the data format.
     """
-    data_schema = make_data_schema(resource_schema, only=only)
+    data_schema = make_data_schema(resource_schema, only=only, partial=partial)
 
     class JsonApiPostSchema(Schema):
         data = fields.Nested(data_schema)

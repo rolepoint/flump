@@ -6,18 +6,16 @@ from ..schemas import ResponseData, make_entity_schema
 
 
 class Patch:
-    def patch_schema(self, entity):
+    @property
+    def patch_schema(self):
         """
         Builds a schema for PATCH requests. Passes the `entity` to the resource
         schema as the existing_entity. Also specifies the resource_schema as
         being `partial`, i.e it will ignore missing fields during
         deserialization.
         """
-        return make_entity_schema(
-            self.resource_schema(existing_entity=entity, partial=True),
-            self.resource_name,
-            only=self.patch_fields
-        )
+        return make_entity_schema(self.resource_schema, self.resource_name,
+                                  only=self.patch_fields, partial=True)
 
     @property
     def patch_data(self):
@@ -45,7 +43,8 @@ class Patch:
             raise NotFound
         self._verify_etag(entity)
 
-        entity_data, errors = self.patch_schema(entity)().load(self.patch_data)
+        patch_schema = self.patch_schema(context={'existing_entity': entity})
+        entity_data, errors = patch_schema.load(self.patch_data)
         if errors:
             raise FlumpUnprocessableEntity(errors=errors)
 

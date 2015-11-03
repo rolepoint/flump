@@ -36,8 +36,8 @@ def view_and_schema():
             instances[str(i)] = entity
             return entity
 
-        def update_entity(self, data):
-            return self.existing_entity._replace(**data)
+        def update_entity(self, existing_entity, data):
+            return existing_entity._replace(**data)
 
     return UserFlumpView, UserFlumpSchema
 

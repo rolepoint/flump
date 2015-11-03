@@ -83,21 +83,14 @@ class FlumpSchema(Schema):
     `create_entity` methods to create/update entities.
     """
 
-    def __init__(self, existing_entity=None, *args, **kwargs):
-        self.existing_entity = existing_entity
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-    def __call__(self):
-        """
-        Implemented so we can initialize with an existing_entity and not break
-        Nesting.
-        """
-        return self
 
     @post_load
     def handle_entity(self, data):
-        if self.existing_entity:
-            return self.update_entity(data)
+        existing_entity = self.context.get('existing_entity')
+        if existing_entity:
+            return self.update_entity(existing_entity, data)
 
         return self.create_entity(data)
 
@@ -110,7 +103,7 @@ class FlumpSchema(Schema):
         """
         raise NotImplemented
 
-    def create_entity(self, data):
+    def create_entity(self, existing_entity, data):
         """
         Should save an entity from the given data.
 
