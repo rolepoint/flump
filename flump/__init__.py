@@ -62,7 +62,7 @@ class FlumpBlueprint(Blueprint):
         view_func = _FlumpMethodView.as_view(flump_view.resource_name,
                                              flump_view=flump_view)
 
-        self.add_url_rule(flump_view.endpoint, defaults={'entity_id': None},
+        self.add_url_rule(flump_view.endpoint,
                           methods=('GET',), view_func=view_func)
         self.add_url_rule(flump_view.endpoint, view_func=view_func,
                           methods=('POST',))
