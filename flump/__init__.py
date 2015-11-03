@@ -14,8 +14,9 @@ import logging
 from flask import Blueprint, request
 from marshmallow import Schema, post_load
 
+from .base_view import _FlumpMethodView
 from .error_handlers import register_error_handlers
-from .view import _FlumpMethodView, FlumpView   # noqa
+from .view import FlumpView  # (imported to provide access at top level) # noqa
 
 
 MIMETYPE = 'application/vnd.api+json'
