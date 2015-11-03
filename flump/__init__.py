@@ -69,7 +69,7 @@ class FlumpBlueprint(Blueprint):
                           methods=('POST',))
         self.add_url_rule('{}<entity_id>'.format(flump_view.endpoint),
                           view_func=view_func,
-                          methods=('GET', 'PUT', 'DELETE'))
+                          methods=('GET', 'PATCH', 'DELETE'))
 
 
 class FlumpSchema(Schema):
@@ -83,14 +83,14 @@ class FlumpSchema(Schema):
     `create_entity` methods to create/update entities.
     """
 
-    def __init__(self, existing_entity=None, *args, **kwargs):
-        self.existing_entity = existing_entity
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     @post_load
     def handle_entity(self, data):
-        if self.existing_entity:
-            return self.update_entity(data)
+        existing_entity = self.context.get('existing_entity')
+        if existing_entity:
+            return self.update_entity(existing_entity, data)
 
         return self.create_entity(data)
 
@@ -103,7 +103,7 @@ class FlumpSchema(Schema):
         """
         raise NotImplemented
 
-    def create_entity(self, data):
+    def create_entity(self, existing_entity, data):
         """
         Should save an entity from the given data.
 

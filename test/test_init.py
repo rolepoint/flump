@@ -34,7 +34,7 @@ def test_flump_schema_calls_correct_methods(mocker):
     mock_create.assert_called_once_with(data)
     assert mock_update.call_count == 0
 
-    TestSchema(existing_entity=data).load(data)
+    TestSchema(context={'existing_entity': data}).load(data)
 
-    mock_update.assert_called_once_with(data)
+    mock_update.assert_called_once_with(data, data)
     assert mock_create.call_count == 1

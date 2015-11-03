@@ -4,7 +4,7 @@ from werkzeug.exceptions import PreconditionFailed
 from werkzeug.exceptions import NotImplemented as WerkzeugNotImplemented
 
 
-from .schemas import make_data_schema, make_post_schema, make_response_schema
+from .schemas import make_data_schema, make_entity_schema, make_response_schema
 
 
 class BaseFlumpView:
@@ -49,17 +49,7 @@ class BaseFlumpView:
         A schema describing the format of a response according to jsonapi.
         """
         return make_response_schema(self.resource_schema,
-                                    self._get_sparse_fieldset())
-
-    @property
-    def post_schema(self):
-        """
-        A schema describing the format of POST request for jsonapi. Provides
-        automatic error checking for the data format.
-        """
-        return make_post_schema(self.resource_schema,
-                                self._get_sparse_fieldset(),
-                                self.resource_name)
+                                    only=self._get_sparse_fieldset())
 
     def get_many(self):
         raise WerkzeugNotImplemented("Coming Soon.")
@@ -79,7 +69,7 @@ class BaseFlumpView:
     def delete(self, entity_id, **kwargs):
         raise WerkzeugNotImplemented
 
-    def put(self, entity_id, **kwargs):
+    def patch(self, entity_id, **kwargs):
         raise WerkzeugNotImplemented("Coming Soon.")
 
     def _get_sparse_fieldset(self):
@@ -123,5 +113,5 @@ class _FlumpMethodView(MethodView):
     def delete(self, *args, **kwargs):
         return self.flump_view.delete(*args, **kwargs)
 
-    def put(self, *args, **kwargs):
-        return self.flump_view.put(*args, **kwargs)
+    def patch(self, *args, **kwargs):
+        return self.flump_view.patch(*args, **kwargs)

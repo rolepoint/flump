@@ -1,8 +1,8 @@
 from .base_view import BaseFlumpView
-from .methods import Put, Delete, GetMany, GetSingle, Post
+from .methods import Patch, Delete, GetMany, GetSingle, Post
 
 
-class FlumpView(Put, Delete, GetMany, GetSingle, Post, BaseFlumpView):
+class FlumpView(Patch, Delete, GetMany, GetSingle, Post, BaseFlumpView):
     """
     A base view from which all views provided to `FlumpBlueprint` should
     inherit.
