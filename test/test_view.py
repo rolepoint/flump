@@ -9,7 +9,7 @@ import pytest
 from flump import FlumpView, FlumpSchema, FlumpBlueprint, MIMETYPE
 
 
-User = namedtuple('User', ('id', 'etag', 'name'))
+User = namedtuple('User', ('id', 'etag', 'name', 'age'))
 
 
 @pytest.fixture
@@ -26,14 +26,18 @@ def view_and_schema():
             instances.pop(entity.id, None)
 
     class UserFlumpSchema(FlumpSchema):
-        name = fields.Str()
+        name = fields.Str(required=True)
+        age = fields.Integer(required=True)
 
         def create_entity(self, data):
             nonlocal instances
             i = len(instances) + 1
-            entity = User(str(i), str(uuid.uuid4()), data['name'])
+            entity = User(str(i), str(uuid.uuid4()), data['name'], data['age'])
             instances[str(i)] = entity
             return entity
+
+        def update_entity(self, data):
+            return self.existing_entity._replace(**data)
 
     return UserFlumpView, UserFlumpSchema
 
@@ -88,7 +92,9 @@ def flask_client(app):
 
 
 def _create_user(test_client, data=None):
-    data = data or {'data': {'type': 'user', 'attributes': {'name': 'Carl'}}}
+    data = data or {
+        'data': {'type': 'user', 'attributes': {'name': 'Carl', 'age': 26}}
+    }
     return test_client.post(
         url_for('flump.user', _method='POST'), data=json.dumps(data),
         headers=[('Content-Type', 'application/json')]
@@ -113,12 +119,28 @@ def _delete_user(test_client, entity_id, etag=None):
     return test_client.delete(url, headers=headers)
 
 
+def _patch_user(test_client, entity_id, data=None, etag=None):
+    url = url_for('flump.user', entity_id=entity_id, _method='PATCH')
+    headers = [('Content-Type', 'application/json')]
+    if etag:
+        headers.append(('If-Match', etag))
+
+    data = data or {
+        'data': {'type': 'user', 'attributes': {'name': 'Carly', 'age': 27}}
+    }
+
+    return test_client.patch(url, data=json.dumps(data), headers=headers)
+
+
 class TestPost:
     def test_post(self, flask_client):
         response = _create_user(flask_client)
         assert response.status_code == 201
         assert response.json == {
-            'data': {'attributes': {'name': 'Carl'}, 'type': 'user', 'id': '1'},  # noqa
+            'data': {
+                'attributes': {'name': 'Carl', 'age': 26},
+                'type': 'user', 'id': '1'
+            },
             'links': {'self': 'https://localhost/tester/user/1'}
         }
         assert response.headers['Location'] == url_for(
@@ -129,28 +151,37 @@ class TestPost:
 
     def test_post_fails_if_data_is_incorrect(self, flask_client):
         # data is missing a top-level 'data' key.
-        data = {'type': 'user', 'attributes': {'name': 'Carl'}}
+        data = {'type': 'user', 'attributes': {'name': 'Carl', 'age': 26}}
         response = _create_user(flask_client, data=data)
         assert response.status_code == 422
 
     def test_post_fails_if_attribute_is_invalid(self, flask_client):
-        data = {'data': {'type': 'user', 'attributes': {'name': 1}}}
+        data = {
+            'data': {'type': 'user', 'attributes': {'name': 1, 'age': 'carl'}}
+        }
         response = _create_user(flask_client, data=data)
         assert response.status_code == 422
         assert response.json == {
             'errors': {
-                'data': {'attributes': {'name': ['Not a valid string.']}}
+                'data': {'attributes': {'name': ['Not a valid string.'],
+                                        'age': ['Not a valid integer.']}}
             },
             'message': 'JSON does not match expected schema'
         }
 
     def test_post_fails_if_an_id_is_specified(self, flask_client):
-        data = {'data': {'type': 'user', 'attributes': {'name': 'a'}, 'id': 1}}
+        data = {
+            'data': {'type': 'user', 'id': 1,
+                     'attributes': {'name': 'a', 'age': 26}}
+        }
         response = _create_user(flask_client, data=data)
         assert response.status_code == 403
 
     def test_post_fails_if_wrong_resource_type_specified(self, flask_client):
-        data = {'data': {'type': 'comment', 'attributes': {'name': 'Carl'}}}
+        data = {
+            'data': {'type': 'comment',
+                     'attributes': {'name': 'Carl', 'age': 26}}
+        }
         response = _create_user(flask_client, data=data)
         assert response.status_code == 409
 
@@ -161,7 +192,10 @@ class TestGet:
         response = _get_user(flask_client, user.json['data']['id'])
         assert response.status_code == 200
         assert response.json == {
-            'data': {'attributes': {'name': 'Carl'}, 'id': '1', 'type': 'user'},  # noqa
+            'data': {
+                'attributes': {'name': 'Carl', 'age': 26},
+                'id': '1', 'type': 'user'
+            },
             'links': {'self': 'http://localhost/tester/user/1'}
         }
 
@@ -219,4 +253,77 @@ class TestDelete:
         response = _delete_user(
             flask_client, 'totallynotanid', etag='wrong-etag'
         )
+        assert response.status_code == 404
+
+
+class TestPatch:
+    def test_patch(self, flask_client):
+        create_response = _create_user(flask_client)
+        response = _patch_user(
+            flask_client, create_response.json['data']['id'],
+            etag=create_response.headers['Etag']
+        )
+
+        assert response.status_code == 200
+        assert response.json == {
+            'data': {
+                'attributes': {'name': 'Carly', 'age': 27},
+                'id': '1', 'type': 'user'
+            },
+            'links': {'self': 'http://localhost/tester/user/1'}
+        }
+
+    def test_patch_updates_only_specified_field(self, flask_client):
+        create_response = _create_user(flask_client)
+        data = {
+            'data': {'type': 'user', 'attributes': {'name': 'Carly'}}
+        }
+        response = _patch_user(
+            flask_client, create_response.json['data']['id'],
+            data=data, etag=create_response.headers['Etag']
+        )
+
+        assert response.status_code == 200
+        assert response.json == {
+            'data': {
+                'attributes': {'name': 'Carly', 'age': 26},
+                'id': '1', 'type': 'user'
+            },
+            'links': {'self': 'http://localhost/tester/user/1'}
+        }
+
+    def test_patch_works_with_wildcard_etag(self, flask_client):
+        create_response = _create_user(flask_client)
+        response = _patch_user(
+            flask_client, create_response.json['data']['id'], etag='*'
+        )
+
+        assert response.status_code == 200
+        assert response.json == {
+            'data': {
+                'attributes': {'name': 'Carly', 'age': 27},
+                'id': '1', 'type': 'user'
+            },
+            'links': {'self': 'http://localhost/tester/user/1'}
+        }
+
+    def test_patch_fails_with_no_etag(self, flask_client):
+        create_response = _create_user(flask_client)
+        response = _patch_user(
+            flask_client, create_response.json['data']['id'], etag=None
+        )
+
+        assert response.status_code == 412
+
+    def test_patch_fails_with_incorrect_etag(self, flask_client):
+        create_response = _create_user(flask_client)
+        response = _patch_user(
+            flask_client, create_response.json['data']['id'], etag='wrong-etag'
+        )
+
+        assert response.status_code == 412
+
+    def test_patch_fails_with_wrong_id(self, flask_client):
+        response = _patch_user(flask_client, 'notanidlol', etag='wrong-etag')
+
         assert response.status_code == 404

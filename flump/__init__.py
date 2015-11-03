@@ -69,7 +69,7 @@ class FlumpBlueprint(Blueprint):
                           methods=('POST',))
         self.add_url_rule('{}<entity_id>'.format(flump_view.endpoint),
                           view_func=view_func,
-                          methods=('GET', 'PUT', 'DELETE'))
+                          methods=('GET', 'PATCH', 'DELETE'))
 
 
 class FlumpSchema(Schema):
@@ -86,6 +86,13 @@ class FlumpSchema(Schema):
     def __init__(self, existing_entity=None, *args, **kwargs):
         self.existing_entity = existing_entity
         super().__init__(*args, **kwargs)
+
+    def __call__(self):
+        """
+        Implemented so we can initialize with an existing_entity and not break
+        Nesting.
+        """
+        return self
 
     @post_load
     def handle_entity(self, data):

@@ -1,11 +1,19 @@
 from flask import request, jsonify
 
 from ..exceptions import FlumpUnprocessableEntity
-from ..schemas import ResponseData
+from ..schemas import ResponseData, make_entity_schema
 from ..web_utils import url_for
 
 
 class Post:
+    @property
+    def post_schema(self):
+        """
+        A schema describing the format of POST request for jsonapi. Provides
+        automatic error checking for the data format.
+        """
+        return make_entity_schema(self.resource_schema, self.resource_name)
+
     @property
     def post_data(self):
         """
