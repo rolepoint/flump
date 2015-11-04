@@ -29,5 +29,5 @@ class GetSingle:
         )
 
         response = jsonify(response_data)
-        response.headers['Etag'] = entity.etag
+        response.set_etag(str(entity.etag))
         return response, 200

@@ -32,7 +32,7 @@ def view_and_schema():
         def create_entity(self, data):
             nonlocal instances
             i = len(instances) + 1
-            entity = User(str(i), str(uuid.uuid4()), data['name'], data['age'])
+            entity = User(str(i), uuid.uuid4(), data['name'], data['age'])
             instances[str(i)] = entity
             return entity
 
@@ -240,7 +240,7 @@ class TestDelete:
             flask_client, create_response.json['data']['id']
         )
 
-        assert response.status_code == 412
+        assert response.status_code == 428
 
     def test_delete_fails_with_incorrect_etag(self, flask_client):
         create_response = _create_user(flask_client)
@@ -326,7 +326,7 @@ class TestPatch:
             flask_client, create_response.json['data']['id'], etag=None
         )
 
-        assert response.status_code == 412
+        assert response.status_code == 428
 
     def test_patch_fails_with_incorrect_etag(self, flask_client):
         create_response = _create_user(flask_client)
