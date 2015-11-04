@@ -97,7 +97,7 @@ class BaseFlumpView:
         """
         Returns a boolean indicating whether the etag is valid.
         """
-        return request.headers.get('If-Match') in (entity.etag, '*')
+        return request.headers.get('If-Match') in (str(entity.etag), '*')
 
 
 class _FlumpMethodView(MethodView):

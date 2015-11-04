@@ -32,7 +32,7 @@ def view_and_schema():
         def create_entity(self, data):
             nonlocal instances
             i = len(instances) + 1
-            entity = User(str(i), str(uuid.uuid4()), data['name'], data['age'])
+            entity = User(str(i), uuid.uuid4(), data['name'], data['age'])
             instances[str(i)] = entity
             return entity
 
