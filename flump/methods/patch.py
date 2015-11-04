@@ -57,5 +57,5 @@ class Patch:
         )
 
         response = jsonify(data)
-        response.headers['Etag'] = entity_data.attributes.etag
+        response.set_etag(str(entity.etag))
         return response, 200

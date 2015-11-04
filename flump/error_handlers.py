@@ -1,7 +1,8 @@
 from flask import jsonify
 from werkzeug.exceptions import (Unauthorized, NotFound, Conflict,
                                  PreconditionFailed, Forbidden,
-                                 NotImplemented, UnsupportedMediaType)
+                                 NotImplemented, UnsupportedMediaType,
+                                 PreconditionRequired)
 
 from .exceptions import FlumpUnprocessableEntity
 
@@ -36,7 +37,6 @@ def register_error_handlers(blueprint):
     @blueprint.errorhandler(UnsupportedMediaType)
     @blueprint.errorhandler(415)
     def unsupported_media_type(e):
-
         return jsonify(message='Unsupported media type'), 415
 
     @blueprint.errorhandler(FlumpUnprocessableEntity)
@@ -47,6 +47,11 @@ def register_error_handlers(blueprint):
 
         rv = jsonify(**rv)
         return rv, 422
+
+    @blueprint.errorhandler(PreconditionRequired)
+    @blueprint.errorhandler(428)
+    def precondition_required(e):
+        return jsonify(message=str(e.description)), 428
 
     @blueprint.errorhandler(NotImplemented)
     @blueprint.errorhandler(501)

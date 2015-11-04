@@ -1,10 +1,10 @@
 from flask import request
 from flask.views import MethodView
-from werkzeug.exceptions import PreconditionFailed
+from werkzeug.exceptions import PreconditionFailed, PreconditionRequired
 from werkzeug.exceptions import NotImplemented as WerkzeugNotImplemented
 
 
-from .schemas import make_data_schema, make_entity_schema, make_response_schema
+from .schemas import make_data_schema, make_response_schema
 
 
 class BaseFlumpView:
@@ -88,6 +88,9 @@ class BaseFlumpView:
         Verifies that the given etag is valid, if not raises a
         PreconditionFailed.
         """
+        if not request.headers.get('If-Match'):
+            raise PreconditionRequired
+
         if not self._etag_matches(entity):
             raise PreconditionFailed(
                 'Incorrect or missing etag in the In-Match header'
@@ -97,7 +100,7 @@ class BaseFlumpView:
         """
         Returns a boolean indicating whether the etag is valid.
         """
-        return request.headers.get('If-Match') in (str(entity.etag), '*')
+        return any(i in request.if_match for i in (str(entity.etag), '*'))
 
 
 class _FlumpMethodView(MethodView):
