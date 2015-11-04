@@ -1,3 +1,8 @@
+# v0.3.0 (04/11/15)
+
+- Add PATCH support for updating entities
+- Better Etag handling
+
 # v0.2.0 (03/11/15)
 
 - Allow endpoints to take arbitrary kwargs
