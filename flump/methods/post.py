@@ -1,7 +1,9 @@
 from flask import request, jsonify
+from werkzeug.exceptions import Forbidden
+
 
 from ..exceptions import FlumpUnprocessableEntity
-from ..schemas import ResponseData, make_entity_schema
+from ..schemas import ResponseData, make_entity_schema, make_data_schema
 from ..web_utils import url_for
 
 
@@ -12,7 +14,9 @@ class Post:
         A schema describing the format of POST request for jsonapi. Provides
         automatic error checking for the data format.
         """
-        return make_entity_schema(self.resource_schema, self.resource_name)
+        data_schema = make_data_schema(self.resource_schema)
+        return make_entity_schema(self.resource_schema, self.resource_name,
+                                  data_schema)
 
     @property
     def post_data(self):
@@ -31,6 +35,11 @@ class Post:
         entity_data, errors = self.post_schema().load(self.post_data)
         if errors:
             raise FlumpUnprocessableEntity(errors=errors)
+
+        if entity_data.id is not None:
+            raise Forbidden(
+                'You must not specify an id when creating an entity'
+            )
 
         url = url_for('.{}'.format(self.resource_name), _external=True,
                       entity_id=entity_data.attributes.id, _method='GET',

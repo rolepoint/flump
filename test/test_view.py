@@ -126,7 +126,8 @@ def _patch_user(test_client, entity_id, data=None, etag=None):
         headers.append(('If-Match', etag))
 
     data = data or {
-        'data': {'type': 'user', 'attributes': {'name': 'Carly', 'age': 27}}
+        'data': {'type': 'user', 'id': entity_id,
+                 'attributes': {'name': 'Carly', 'age': 27}}
     }
 
     return test_client.patch(url, data=json.dumps(data), headers=headers)
@@ -171,7 +172,7 @@ class TestPost:
 
     def test_post_fails_if_an_id_is_specified(self, flask_client):
         data = {
-            'data': {'type': 'user', 'id': 1,
+            'data': {'type': 'user', 'id': '1',
                      'attributes': {'name': 'a', 'age': 26}}
         }
         response = _create_user(flask_client, data=data)
@@ -275,13 +276,14 @@ class TestPatch:
 
     def test_patch_updates_only_specified_field(self, flask_client):
         create_response = _create_user(flask_client)
+        _id = create_response.json['data']['id']
         data = {
-            'data': {'type': 'user', 'attributes': {'name': 'Carly'}}
+            'data': {
+                'type': 'user', 'id': _id, 'attributes': {'name': 'Carly'}
+            }
         }
-        response = _patch_user(
-            flask_client, create_response.json['data']['id'],
-            data=data, etag=create_response.headers['Etag']
-        )
+        response = _patch_user(flask_client, _id, data=data,
+                               etag=create_response.headers['Etag'])
 
         assert response.status_code == 200
         assert response.json == {
@@ -291,6 +293,17 @@ class TestPatch:
             },
             'links': {'self': 'http://localhost/tester/user/1'}
         }
+
+    def test_patch_fails_without_id_field(self, flask_client):
+        create_response = _create_user(flask_client)
+        _id = create_response.json['data']['id']
+        data = {
+            'data': {'type': 'user', 'attributes': {'name': 'Carly'}}
+        }
+        response = _patch_user(flask_client, _id, data=data,
+                               etag=create_response.headers['Etag'])
+
+        assert response.status_code == 422
 
     def test_patch_works_with_wildcard_etag(self, flask_client):
         create_response = _create_user(flask_client)
