@@ -92,9 +92,7 @@ class BaseFlumpView:
             raise PreconditionRequired
 
         if not self._etag_matches(entity):
-            raise PreconditionFailed(
-                'Incorrect or missing etag in the In-Match header'
-            )
+            raise PreconditionFailed
 
     def _etag_matches(self, entity):
         """
