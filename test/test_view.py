@@ -239,7 +239,7 @@ class TestDelete:
             flask_client, create_response.json['data']['id']
         )
 
-        assert response.status_code == 412
+        assert response.status_code == 428
 
     def test_delete_fails_with_incorrect_etag(self, flask_client):
         create_response = _create_user(flask_client)
@@ -313,7 +313,7 @@ class TestPatch:
             flask_client, create_response.json['data']['id'], etag=None
         )
 
-        assert response.status_code == 412
+        assert response.status_code == 428
 
     def test_patch_fails_with_incorrect_etag(self, flask_client):
         create_response = _create_user(flask_client)

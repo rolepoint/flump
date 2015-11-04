@@ -48,5 +48,5 @@ class Post:
 
         response = jsonify(data)
         response.headers['Location'] = url
-        response.headers['Etag'] = entity_data.attributes.etag
+        response.set_etag(str(entity_data.attributes.etag))
         return response, 201
