@@ -1,7 +1,7 @@
 import pytest
 
 from flump.web_utils import url_for
-from flump.pagination import NumberSizePagination
+from flump.pagination import PageSizePagination
 
 from ..helpers import create_user
 
@@ -51,7 +51,7 @@ class TestGetManyWithPagination:
     def view_and_schema(self, view_and_schema):
         view, schema, instances = view_and_schema
 
-        class ViewWithPagination(NumberSizePagination, view):
+        class ViewWithPagination(PageSizePagination, view):
             DEFAULT_PAGE_SIZE = 2
 
             def get_many_entities(self, **kwargs):

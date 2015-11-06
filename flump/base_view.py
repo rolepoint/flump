@@ -31,7 +31,7 @@ class BaseFlumpView:
         """
         Should return an iterable of entities.
 
-        Note: If the NumberSizePagination class has been mixed in, you can
+        Note: If the PageSizePagination class has been mixed in, you can
               get the pagination arguments through self.get_pagination_args()
         """
         raise NotImplemented

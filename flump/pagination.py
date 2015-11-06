@@ -6,7 +6,7 @@ from flask import request
 from .web_utils import url_for
 
 
-class NumberSizePagination:
+class PageSizePagination:
     """
     Mixin class which provides methods for Number/Size based pagination.
     """
