@@ -17,8 +17,8 @@ class PageSizePagination:
         """
         Returns the pagination args, accounting for defaults and maximums.
         """
-        page = int(request.args.get('page[number]', 1))
-        size = int(request.args.get('page[size]', self.DEFAULT_PAGE_SIZE))
+        page = int(request.args.get('page[number]') or 1)
+        size = int(request.args.get('page[size]') or self.DEFAULT_PAGE_SIZE)
         return {
             'page': page if page >= 1 else 1,
             'size': size if size <= self.MAX_PAGE_SIZE else self.MAX_PAGE_SIZE
