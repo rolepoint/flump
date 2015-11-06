@@ -24,7 +24,7 @@ class PageSizePagination:
             'size': size if size <= self.MAX_PAGE_SIZE else self.MAX_PAGE_SIZE
         }
 
-    def get_pagination_links(self):
+    def get_pagination_links(self, **kwargs):
         """
         Returns a dict containing all of the pagination links required by
         jsonapi.
@@ -33,14 +33,14 @@ class PageSizePagination:
         size = args['size']
 
         parsed_url = urlparse(url_for('.{}'.format(self.resource_name),
-                              _external=True, _method='GET'))
+                              _external=True, _method='GET', **kwargs))
 
         def make_url(page):
             params = (('page[number]', page), ('page[size]', size))
             return parsed_url._replace(query=urlencode(params)).geturl()
 
         num_pages = int(
-            ceil(self.get_total_entities() / float(size))
+            ceil(self.get_total_entities(**kwargs) / float(size))
         )
         page = args['page']
 
@@ -52,10 +52,10 @@ class PageSizePagination:
             'next': make_url(page + 1) if page < num_pages else None
         }
 
-    def make_get_many_response(self, entity_data):
+    def make_get_many_response(self, entity_data, **kwargs):
         """
         Returns a `schemas.ManyResponseData` with the links replaced with
         those returned by `get_pagination_links`.
         """
-        response = super().make_get_many_response(entity_data)
-        return response._replace(links=self.get_pagination_links())
+        response = super().make_get_many_response(entity_data, **kwargs)
+        return response._replace(links=self.get_pagination_links(**kwargs))
