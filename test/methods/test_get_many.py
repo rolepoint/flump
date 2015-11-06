@@ -31,7 +31,13 @@ class TestGetManyDefault:
                     'id': '3', 'type': 'user'
                 }
             ],
-            'links': {'self': 'http://localhost/tester/user/'}
+            'links': {
+                'self': 'http://localhost/tester/user/',
+                'prev': None,
+                'next': None,
+                'first': None,
+                'last': None
+            }
         }
 
     def test_get_when_none_exist(self, flask_client):
