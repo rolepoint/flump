@@ -40,13 +40,19 @@ For example when using Flask-SqlAlchemy ORM models you might define something li
             db.session.flush()
             return model
 
-We then need to hook this Schema up to a View. To do this you must provide a View class which inherits from `FlumpView` and provides methods for `get_entity`, to retrieve a singular entity given an `entity_id`. And for `delete_entity`, to delete the given instantiated `entity`.
+We then need to hook this Schema up to a View. To do this you must provide a View class which inherits from `FlumpView` and provides methods for `get_entity`, to retrieve a singular entity given an `entity_id`. And for `delete_entity`, to delete the given instantiated `entity`. You msut also provide a `get_many_entities` method which returns all of the entities available, and a `get_total_entities` method which should return a count of the total number of entities. You can limit the number of entities you wish to be returned by using the provided `NumberSizePagination` mixin, or rolling your own. The example below does NOT use the `NumberSizePagination` mixn.
 
 An example of this would be:
     
     from connect.rib.flump import FlumpSchema, FlumpView
 
     class UserView(FlumpView):
+        def get_many_entities(self):
+            return User.query.all()
+
+        def get_total_entities(self):
+            return User.query.count()
+
         def get_entity(self, entity_id):
             return User.query.get(entity_id)
 

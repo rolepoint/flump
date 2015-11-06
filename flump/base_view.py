@@ -21,6 +21,21 @@ class BaseFlumpView:
         self.resource_name = resource_name
         self.endpoint = endpoint
 
+    def get_total_entities(self, **kwargs):
+        """
+        Should return an integer for the total number of entities.
+        """
+        raise NotImplemented
+
+    def get_many_entities(self, **kwargs):
+        """
+        Should return an iterable of entities.
+
+        Note: If the NumberSizePagination class has been mixed in, you can
+              get the pagination arguments through self.get_pagination_args()
+        """
+        raise NotImplemented
+
     def get_entity(self, entity_id, **kwargs):
         """
         Should provide a method of retrieving a single entity given the
