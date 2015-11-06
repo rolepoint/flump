@@ -1,0 +1,60 @@
+from flump.web_utils import url_for
+
+from ..helpers import create_user
+
+
+def test_post(flask_client):
+    response = create_user(flask_client)
+    assert response.status_code == 201
+    assert response.json == {
+        'data': {
+            'attributes': {'name': 'Carl', 'age': 26},
+            'type': 'user', 'id': '1'
+        },
+        'links': {'self': 'http://localhost/tester/user/1'}
+    }
+    assert response.headers['Location'] == url_for(
+        'flump.user', entity_id=response.json['data']['id'], _method='GET',
+        _scheme='http'
+    )
+    assert response.headers['Etag']
+
+
+def test_post_fails_if_data_is_incorrect(flask_client):
+    # data is missing a top-level 'data' key.
+    data = {'type': 'user', 'attributes': {'name': 'Carl', 'age': 26}}
+    response = create_user(flask_client, data=data)
+    assert response.status_code == 422
+
+
+def test_post_fails_if_attribute_is_invalid(flask_client):
+    data = {
+        'data': {'type': 'user', 'attributes': {'name': 1, 'age': 'carl'}}
+    }
+    response = create_user(flask_client, data=data)
+    assert response.status_code == 422
+    assert response.json == {
+        'errors': {
+            'data': {'attributes': {'name': ['Not a valid string.'],
+                                    'age': ['Not a valid integer.']}}
+        },
+        'message': 'JSON does not match expected schema'
+    }
+
+
+def test_post_fails_if_an_id_is_specified(flask_client):
+    data = {
+        'data': {'type': 'user', 'id': '1',
+                 'attributes': {'name': 'a', 'age': 26}}
+    }
+    response = create_user(flask_client, data=data)
+    assert response.status_code == 403
+
+
+def test_post_fails_if_wrong_resource_type_specified(flask_client):
+    data = {
+        'data': {'type': 'comment',
+                 'attributes': {'name': 'Carl', 'age': 26}}
+    }
+    response = create_user(flask_client, data=data)
+    assert response.status_code == 409
