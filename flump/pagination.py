@@ -31,17 +31,18 @@ class PageSizePagination:
         """
         args = self.get_pagination_args()
         size = args['size']
+        total_entities = self.get_total_entities(**kwargs)
 
         parsed_url = urlparse(url_for('.{}'.format(self.resource_name),
                               _external=True, _method='GET', **kwargs))
 
         def make_url(page):
+            if not total_entities:
+                return None
             params = (('page[number]', page), ('page[size]', size))
             return parsed_url._replace(query=urlencode(params)).geturl()
 
-        num_pages = int(
-            ceil(self.get_total_entities(**kwargs) / float(size))
-        )
+        num_pages = int(ceil(total_entities / float(size)))
         page = args['page']
 
         return {

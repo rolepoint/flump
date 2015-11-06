@@ -41,7 +41,13 @@ class TestGetManyDefault:
         assert response.json == {
             'meta': {'total_count': 0},
             'data': [],
-            'links': {'self': 'http://localhost/tester/user/'}
+            'links': {
+                'self': 'http://localhost/tester/user/',
+                'prev': None,
+                'next': None,
+                'first': None,
+                'last': None
+            }
         }
 
 

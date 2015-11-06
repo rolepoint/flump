@@ -11,8 +11,12 @@ class GetMany:
                                     only=self._get_sparse_fieldset())
 
     def make_get_many_response(self, entity_data, **kwargs):
+        links = dict(
+            dict.fromkeys(('first', 'last', 'prev', 'next')),
+            self=request.url
+        )
         return ManyResponseData(
-            entity_data, {'self': request.url},
+            entity_data, links,
             {'total_count': self.get_total_entities(**kwargs)}
         )
 
