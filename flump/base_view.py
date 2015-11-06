@@ -66,8 +66,8 @@ class BaseFlumpView:
         return make_response_schema(self.resource_schema,
                                     only=self._get_sparse_fieldset())
 
-    def get_many(self):
-        raise WerkzeugNotImplemented("Coming Soon.")
+    def get_many(self, **kwargs):
+        raise WerkzeugNotImplemented
 
     def get_single(self, entity_id=None, **kwargs):
         raise WerkzeugNotImplemented
@@ -75,7 +75,7 @@ class BaseFlumpView:
     def get(self, entity_id=None, **kwargs):
         return (
             self.get_single(entity_id, **kwargs) if entity_id
-            else self.get_many()
+            else self.get_many(**kwargs)
         )
 
     def post(self, **kwargs):
