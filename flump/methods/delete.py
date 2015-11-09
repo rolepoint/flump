@@ -7,7 +7,7 @@ class Delete:
         """
         Should provide a method of deleting a single entity given the `entity`.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def delete(self, entity_id, **kwargs):
         """

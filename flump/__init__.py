@@ -101,7 +101,7 @@ class FlumpSchema(Schema):
         `data` will be a dict whose key/values correspond to the schema
         attributes after being loaded.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def create_entity(self, existing_entity, data):
         """
@@ -110,4 +110,4 @@ class FlumpSchema(Schema):
         `data` will be a dict whose key/values correspond to the schema
         attributes after being loaded.
         """
-        raise NotImplemented
+        raise NotImplementedError

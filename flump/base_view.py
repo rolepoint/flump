@@ -25,7 +25,7 @@ class BaseFlumpView:
         """
         Should return an integer for the total number of entities.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def get_many_entities(self, **kwargs):
         """
@@ -34,20 +34,20 @@ class BaseFlumpView:
         Note: If the PageSizePagination class has been mixed in, you can
               get the pagination arguments through self.get_pagination_args()
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def get_entity(self, entity_id, **kwargs):
         """
         Should provide a method of retrieving a single entity given the
         `entity_id`.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def delete_entity(self, entity):
         """
         Should provide a method of deleting a single entity given the `entity`.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     @property
     def data_schema(self):

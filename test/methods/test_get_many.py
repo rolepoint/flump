@@ -69,13 +69,11 @@ class TestGetManyWithPagination:
             def get_many_entities(self, **kwargs):
                 nonlocal instances
                 pagination_args = self.get_pagination_args()
-                size = pagination_args['size']
-                page = pagination_args['page']
                 chunks = [
-                    instances[i:i + size]
-                    for i in range(0, len(instances), size)
+                    instances[i:i + pagination_args.size]
+                    for i in range(0, len(instances), pagination_args.size)
                 ]
-                return chunks[page - 1]
+                return chunks[pagination_args.page - 1]
 
         return ViewWithPagination, schema, instances
 
