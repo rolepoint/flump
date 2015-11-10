@@ -17,6 +17,13 @@ class BaseFlumpView:
     """
 
     def __init__(self, resource_schema, resource_name, endpoint):
+        """
+        :param resource_schema: The schema describing the resource. Should be
+                                an instance of :class:`FlumpSchema`
+        :param resource_name:   The name of the resource type the API will be
+                                used for.
+        :param endpoint:        The URL endpoint the API should live at.
+        """
         self.resource_schema = resource_schema
         self.resource_name = resource_name
         self.endpoint = endpoint

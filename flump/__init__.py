@@ -1,11 +1,14 @@
 """
-An API builder which depends on Flask and Marshmallow.
+    flump
+    ~~~~~
+    An API builder which depends on Flask and Marshmallow and follows
+    http://jsonapi.org.
 
-As far as possible tries to follow http://jsonapi.org
+    .. note:: Currently missing content negotation
+             (http://jsonapi.org/format/#content-negotiation-servers), possibly
+             to be added in a later version.
 
-Currently missing content negotation
-http://jsonapi.org/format/#content-negotiation-servers, possible to be added in
-a later version
+    :copyright: (c) 2015 by RolePoint.
 """
 __version__ = "0.4.0"
 
@@ -29,6 +32,8 @@ class FlumpBlueprint(Blueprint):
 
     Also provides some default logging, and adds the 'application/vnd.api+json'
     Content-Type header to all responses.
+
+    :param flump_views: A list of :class:`.view.FlumpView`
     """
     def __init__(self, *args, flump_views=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -59,6 +64,8 @@ class FlumpBlueprint(Blueprint):
         """
         Registers the various URL rules for the given `flump_view` on the
         Blueprint.
+
+        :param flump_view: The :class:`.view.FlumpView` to register URLs for.
         """
         view_func = _FlumpMethodView.as_view(flump_view.resource_name,
                                              flump_view=flump_view)
@@ -94,20 +101,22 @@ class FlumpSchema(Schema):
 
         return self.create_entity(data)
 
-    def update_entity(self, data):
+    def update_entity(self, existing_entity, data):
         """
         Should update an entity from the given data.
 
-        `data` will be a dict whose key/values correspond to the schema
-        attributes after being loaded.
+        :param existing_entity: The instance returned from
+                                :func:`.view.FlumpView.get_entity`
+        :param data: Dict whose key/values correspond to the schema attributes
+                     after being loaded.
         """
         raise NotImplementedError
 
-    def create_entity(self, existing_entity, data):
+    def create_entity(self, data):
         """
         Should save an entity from the given data.
 
-        `data` will be a dict whose key/values correspond to the schema
-        attributes after being loaded.
+        :param data: Dict whose key/values correspond to the schema attributes
+                     after being loaded.
         """
         raise NotImplementedError
