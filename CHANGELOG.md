@@ -1,3 +1,8 @@
+# v0.4.0 (10/11/15)
+
+- Add GET MANY support
+- Add basic pagination mixin
+
 # v0.3.0 (04/11/15)
 
 - Add PATCH support for updating entities
