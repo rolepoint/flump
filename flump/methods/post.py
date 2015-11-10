@@ -44,9 +44,9 @@ class Post:
         url = url_for('.{}'.format(self.resource_name), _external=True,
                       entity_id=entity_data.attributes.id, _method='GET',
                       **kwargs)
-        data, _ = self.response_schema(strict=True).dump(
-            ResponseData(entity_data, {'self': url})
-        )
+        schema = self.response_schema(strict=True)
+        response_data = ResponseData(entity_data, {'self': url})
+        data, _ = schema.dump(response_data)
 
         response = jsonify(data)
         response.headers['Location'] = url

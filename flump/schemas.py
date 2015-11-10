@@ -10,6 +10,8 @@ EntityData = namedtuple('EntityData', ('id', 'type', 'attributes'))
 
 ResponseData = namedtuple('ResponseData', ('data', 'links'))
 
+ManyResponseData = namedtuple('ManyResponseData', ('data', 'links', 'meta'))
+
 
 def make_data_schema(
     resource_schema, only=None, partial=False, id_required=False
@@ -45,7 +47,7 @@ def make_data_schema(
     return JsonApiSchema
 
 
-def make_response_schema(resource_schema, only=None):
+def make_response_schema(resource_schema, only=None, many=False):
     """
     Constructs schema describing the format of a response according to jsonapi.
     """
@@ -53,10 +55,18 @@ def make_response_schema(resource_schema, only=None):
 
     class LinkSchema(Schema):
         self = fields.Str()
+        first = fields.Str()
+        last = fields.Str()
+        next = fields.Str()
+        prev = fields.Str()
+
+    class MetaSchema(Schema):
+        total_count = fields.Integer()
 
     class JsonApiResponseSchema(Schema):
-        data = fields.Nested(data_schema)
+        data = fields.Nested(data_schema, many=many)
         links = fields.Nested(LinkSchema)
+        meta = fields.Nested(MetaSchema)
 
     return JsonApiResponseSchema
 
