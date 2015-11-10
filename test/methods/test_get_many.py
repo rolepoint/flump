@@ -31,13 +31,7 @@ class TestGetManyDefault:
                     'id': '3', 'type': 'user'
                 }
             ],
-            'links': {
-                'self': 'http://localhost/tester/user/',
-                'prev': None,
-                'next': None,
-                'first': None,
-                'last': None
-            }
+            'links': {'self': 'http://localhost/tester/user/'}
         }
 
     def test_get_when_none_exist(self, flask_client):
@@ -47,13 +41,7 @@ class TestGetManyDefault:
         assert response.json == {
             'meta': {'total_count': 0},
             'data': [],
-            'links': {
-                'self': 'http://localhost/tester/user/',
-                'prev': None,
-                'next': None,
-                'first': None,
-                'last': None
-            }
+            'links': {'self': 'http://localhost/tester/user/'}
         }
 
 
