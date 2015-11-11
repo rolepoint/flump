@@ -7,18 +7,19 @@ from ..schemas import ResponseData, make_entity_schema, make_data_schema
 
 class Patch:
     @property
-    def patch_schema(self):
+    def _patch_schema(self):
         """
         Builds a schema for PATCH requests. Specifies the resource_schema as
         being `partial`, i.e it will ignore missing fields during
         deserialization.
         """
-        data_schema = make_data_schema(
-            self.resource_schema,
-            id_required=True, only=self.patch_fields, partial=True
-        )
+        fields = request.json['data']['attributes'].keys()
         return make_entity_schema(
-            self.resource_schema, self.resource_name, data_schema
+            self.resource_schema, self.resource_name,
+            make_data_schema(
+                self.resource_schema, id_required=True,
+                only=fields, partial=True
+            )
         )
 
     @property
@@ -29,25 +30,25 @@ class Patch:
         """
         return request.json
 
-    @property
-    def patch_fields(self):
-        """
-        Returns the fields the user is trying to patch.
-        """
-        return request.json['data']['attributes'].keys()
-
     def patch(self, entity_id, **kwargs):
         """
+        Handles HTTP PATCH requests.
+
         Updates an entity based on the current schema and request json. The
-        schema should provide a method for updating the entity using the
-        `update_entity` function.
+        schema should provide a method for updating the entity using
+        :func:`flump.FlumpSchema.update_entity`.
+
+        :param entity_id: The entity_id used to retrieve the entity using
+                          :func:`flump.view.FlumpView.get_entity`
+        :param \**kwargs: Any other kwargs taken from the url which are used
+                          for identifying the entity to patch.
         """
         entity = self.get_entity(entity_id, **kwargs)
         if not entity:
             raise NotFound
         self._verify_etag(entity)
 
-        patch_schema = self.patch_schema(context={'existing_entity': entity})
+        patch_schema = self._patch_schema(context={'existing_entity': entity})
         entity_data, errors = patch_schema.load(self.patch_data)
         if errors:
             raise FlumpUnprocessableEntity(errors=errors)

@@ -27,11 +27,14 @@ MIMETYPE = 'application/vnd.api+json'
 
 class FlumpBlueprint(Blueprint):
     """
-    Exactly the same as a Flask Blueprint, but provides a convenience method
-    for registering FlumpView routes.
+    A specialised Flask Blueprint for Marshmallow, which provides a convenience
+    method for registering FlumpView routes.
 
-    Also provides some default logging, and adds the 'application/vnd.api+json'
-    Content-Type header to all responses.
+    Provides some default logging, which is disabled by default. This logs the
+    request HTTP method, the kwargs passed to the view endpoint, and the
+    request JSON body.
+
+    Adds the 'application/vnd.api+json' Content-Type header to all responses.
 
     :param flump_views: A list of :class:`.view.FlumpView`
     """
@@ -81,8 +84,8 @@ class FlumpBlueprint(Blueprint):
 
 class FlumpSchema(Schema):
     """
-    The basic Schema which all `FlumpView.base_schema` should be an instance
-    of.
+    The basic Schema which all :paramref:`flump.view.FlumpView.resource_schema`
+    should be an instance of.
 
     Provides automatic entity creation/updating through the `post_load` hook.
 
@@ -90,11 +93,16 @@ class FlumpSchema(Schema):
     `create_entity` methods to create/update entities.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @post_load
     def handle_entity(self, data):
+        """
+        Either updates an existing entity if one is provide in the context, or
+        creates a new entity.
+
+        :param data: The deserialized data dict.
+        :returns: Either a new entity if we have a `POST` request, or the
+                  updated entity if it is a `PATCH` request.
+        """
         existing_entity = self.context.get('existing_entity')
         if existing_entity:
             return self.update_entity(existing_entity, data)
@@ -107,8 +115,8 @@ class FlumpSchema(Schema):
 
         :param existing_entity: The instance returned from
                                 :func:`.view.FlumpView.get_entity`
-        :param data: Dict whose key/values correspond to the schema attributes
-                     after being loaded.
+        :param data: The deserialized data dict.
+        :returns: The updated entity.
         """
         raise NotImplementedError
 
@@ -116,7 +124,7 @@ class FlumpSchema(Schema):
         """
         Should save an entity from the given data.
 
-        :param data: Dict whose key/values correspond to the schema attributes
-                     after being loaded.
+        :param data: The deserialized data dict.
+        :returns: The newly created entity.
         """
         raise NotImplementedError

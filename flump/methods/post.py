@@ -9,14 +9,13 @@ from ..web_utils import url_for
 
 class Post:
     @property
-    def post_schema(self):
+    def _post_schema(self):
         """
         A schema describing the format of POST request for jsonapi. Provides
         automatic error checking for the data format.
         """
-        data_schema = make_data_schema(self.resource_schema)
         return make_entity_schema(self.resource_schema, self.resource_name,
-                                  data_schema)
+                                  make_data_schema(self.resource_schema))
 
     @property
     def post_data(self):
@@ -28,11 +27,16 @@ class Post:
 
     def post(self, **kwargs):
         """
+        Handles HTTP POST requests.
+
         Creates an entity based on the current schema and request json. The
-        schema should provide a method for creating the entity using the
-        `create_entity` function.
+        schema should provide a method for creating the entity using
+        :func:`flump.FlumpSchema.create_entity`
+
+        :param \**kwargs: Any kwargs taken from the url which are used
+                          for building the url identifying the new entity.
         """
-        entity_data, errors = self.post_schema().load(self.post_data)
+        entity_data, errors = self._post_schema().load(self.post_data)
         if errors:
             raise FlumpUnprocessableEntity(errors=errors)
 

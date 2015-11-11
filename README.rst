@@ -5,18 +5,16 @@ Flump is a database agnostic api builder which depends on `Flask`_ and
 `Marshmallow`_.
 
 Marshmallow is used to provide the Schemas against which data is
-validated and returned. The Schemas should also provide functions for
-updating and saving entities.
+validated and returned.
 
 Example Usage
 -------------
 
-You must define your schemas describing your models, these schemas must
+You must define schemas describing your models. These schemas should
 inherit from ``FlumpSchema`` and provide methods for saving/updating the
 model.
 
-When updating, the FlumpSchema is provided with an existing model which
-can be accessed through ``self.existing_entity``.
+When updating, the FlumpSchema is provided with an existing model.
 
 For example when using Flask-SqlAlchemy ORM models you might define
 something like:
@@ -30,18 +28,22 @@ something like:
     db = SQLAlchemy()
 
     class User(Model):
-        username = db.Text()
-        email = db.Text()
+        username = db.Column(db.Text)
+        email = db.Column(db.Text)
+
+        # All models used in Flump must have an etag, for more information
+        # see (insert link here Carl)
+        etag = db.Column(db.Text)
 
     class UserSchema(FlumpSchema):
 
         username = fields.Str()
         email = fields.Str()
 
-        def update_entity(self, data):
+        def update_entity(self, existing_entity, data):
             for k, v in data:
-                setattr(self.existing_entity, k, v)
-            return self.existing_entity
+                setattr(existing_entity, k, v)
+            return existing_entity
 
         def create_entity(self, data):
             # Note that as this is a new model it must be added to the session
@@ -51,19 +53,22 @@ something like:
             db.session.flush()
             return model
 
-We then need to hook this Schema up to a View. To do this you must
-provide a View class which inherits from ``FlumpView`` and provides
-methods for ``get_entity``, to retrieve a singular entity given an
-``entity_id``. And for ``delete_entity``, to delete the given
-instantiated ``entity``. You must also provide a ``get_many_entities``
-method which returns all of the entities available, and a
-``get_total_entities`` method which should return a count of the total
-number of entities. You can limit the number of entities you wish to be
+We then need to hook this Schema up to a View. To do this you must provide
+a View class which inherits from ``FlumpView`` and provides the following
+methods:
+
+* ``get_entity``, which retrieves a singular entity given an ``entity_id``.
+
+* ``delete_entity``, which deletes the given instantiated ``entity``.
+
+* ``get_many_entities``, which returns all of the entities available.
+
+* ``get_total_entities``,  which should return a count of the total number of entities.
+
+You can limit the number of entities you wish to be
 returned by using the provided ``NumberSizePagination`` mixin, or
 rolling your own. The example below does NOT use the
 ``NumberSizePagination`` mixin.
-
-An example of this would be:
 
 ::
 
@@ -82,8 +87,7 @@ An example of this would be:
         def delete_entity(self, entity):
             db.session.delete(entity)
 
-Next you need to put all of this togther and hook it up to a Flask app.
-To do this you create your Blueprints using ``FlumpBlueprint``.
+To hook this into flask you should create a FlumpBlueprint and register it with your app.
 
 ::
 
@@ -95,8 +99,7 @@ To do this you create your Blueprints using ``FlumpBlueprint``.
             flump_views=[UserView(UserSchema, 'user', '/user/')]
         )
 
-You can then define any teardown which is needed, for example with
-sqlalchemy we either want to ``commit`` or ``rollback`` any changes
+`FlumpBlueprint` acts like a normal Flask Blueprint, so you can register `before_request`, `after_request` & `teardown_request` handlers as usual.  For example with sqlalchemy we either want to ``commit`` or ``rollback`` any changes
 which have been made, depending on whether there has been an exception:
 
 ::
