@@ -17,3 +17,10 @@ API Reference
 
     api_reference
 
+Examples
+==============
+
+.. toctree::
+    :maxdepth: 2
+
+    examples

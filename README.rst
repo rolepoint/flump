@@ -19,6 +19,11 @@ When updating, the FlumpSchema is provided with an existing model.
 For example when using Flask-SqlAlchemy ORM models you might define
 something like:
 
+.. note::
+
+    All models used in Flump must have a field called `etag`, this should be a field
+    which auto updates when modified, and is used for concurrency control.
+
 ::
 
     from flask.ext.sqlalchemy import Model, SQLAlchemy
@@ -30,9 +35,6 @@ something like:
     class User(Model):
         username = db.Column(db.Text)
         email = db.Column(db.Text)
-
-        # All models used in Flump must have an etag, for more information
-        # see (insert link here Carl)
         etag = db.Column(db.Text)
 
     class UserSchema(FlumpSchema):
@@ -92,8 +94,6 @@ To hook this into flask you should create a FlumpBlueprint and register it with 
 ::
 
     def setup_flump(app, db):
-        from connect.rib.flump import create_api_blueprint
-
         blueprint = FlumpBlueprint(
             'flump', __name__,
             flump_views=[UserView(UserSchema, 'user', '/user/')]
@@ -118,6 +118,7 @@ Finally we need to hook up the blueprint to our Flask app:
     app.register_blueprint(blueprint, url_prefix='/flump')
 
 And you’re done!
+
 
 .. _Flask: https://flask.pocoo.org
 .. _Marshmallow: https://marshmallow.readthedocs.org
