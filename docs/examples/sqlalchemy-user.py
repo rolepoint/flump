@@ -41,7 +41,7 @@ class UserSchema(FlumpSchema):
 
     def create_entity(self, data):
         # Note that as this is a new model it must be added to the session
-        model = User(**data)
+        model = User(etag=random.random(), **data)
         db.session.add(model)
         # We must flush the session so an ID is assigned to our Model, and we
         # can therefore return the ID.

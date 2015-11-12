@@ -92,7 +92,7 @@ We can then update our User, to do this we must provide the Etag of the User (ta
 
 ::
 
-    $ curl -XPATCH http://localhost:5000/flump/user/1 -H "Content-Type: application/json" -d '{"data": {"attributes": {"username": "newcarl"}, "type": "user", "id": 1}}' -H "If-Match: 0.22761545310897413"
+    $ curl -XPATCH http://localhost:5000/flump/user/1 -H "Content-Type: application/json" -d '{"data": {"attributes": {"username": "newcarl"}, "type": "user", "id": "1"}}' -H "If-Match: 0.22761545310897413"
 
     HTTP/1.0 200 OK
     Content-Type: application/vnd.api+json
