@@ -7,6 +7,11 @@ Flump is a database agnostic api builder which depends on `Flask`_ and
 Marshmallow is used to provide the Schemas against which data is
 validated and returned.
 
+Flump tries to be as flexible as possible, giving no strong opinions/implementations
+for many common API features, such as; pagination, filtering, ordering, authentication etc..
+Instead Flump provides easily mixed in classes which also provide a common interface for extending
+itself to your needs.
+
 Example Usage
 -------------
 

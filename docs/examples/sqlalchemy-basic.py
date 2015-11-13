@@ -7,7 +7,7 @@ from marshmallow import fields
 
 # Create a basic Flask app and set it to use SQLite.
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/basic-test.db'
 
 # Register the app with SQLAlchemy
 db = SQLAlchemy(app)
