@@ -1,27 +1,29 @@
 Simple SQlAlchemy example
 ====================
 
+Before reading through this example, we recommend reading through :ref:`sqlalchemy-basic`.
+
 First off you will need to change directory to the examples directory
 
-::
+.. code-block.. code-block:: guess guess
 
     $ cd docs/examples
 
 You will then need to install the `sqlalchemy-requirements.txt` file to run this example:
 
-::
+.. code-block:: guess
 
     $ pip install -r sqlalchemy-requirements.txt
 
 You can now run the code from sqlalchemy-basic.py by running:
 
-::
+.. code-block:: guess
 
     $ python sqlalchemy-basic.py
 
 You now have a running CRUD API for a User model. You can query for all of the entities:
 
-::
+.. code-block:: guess
 
     $ curl http://localhost:5000/flump/user/
     {
@@ -36,7 +38,7 @@ You now have a running CRUD API for a User model. You can query for all of the e
 
 Obviously no Users exist yet, so let's create one!
 
-::
+.. code-block:: guess
 
     $ curl -XPOST http://localhost:5000/flump/user/ -H "Content-Type: application/json" -d '{"data": {"attributes": {"username": "carl", "email": "carl@rolepoint.com"}, "type": "user"}}' -i
 
@@ -44,7 +46,7 @@ Obviously no Users exist yet, so let's create one!
     Content-Type: application/vnd.api+json
     Content-Length: 210
     Location: https://localhost:5000/flump/user/1
-    ETag: "0.22761545310897413"
+    ETag: "32fc216a-f385-4fbc-9404-9ba44ea4e8eb"
     Server: Werkzeug/0.11 Python/3.4.2
 
     {
@@ -63,14 +65,14 @@ Obviously no Users exist yet, so let's create one!
 
 Which we can then `GET` by running
 
-::
+.. code-block:: guess
 
     $ curl http://localhost:5000/flump/user/1 -i
 
     HTTP/1.0 200 OK
     Content-Type: application/vnd.api+json
     Content-Length: 209
-    ETag: "0.22761545310897413"
+    ETag: "32fc216a-f385-4fbc-9404-9ba44ea4e8eb"
     Server: Werkzeug/0.11 Python/3.4.2
     Date: Thu, 12 Nov 2015 16:33:30 GMT
 
@@ -90,14 +92,14 @@ Which we can then `GET` by running
 
 We can then update our User, to do this we must provide the Etag of the User (taken from the Etag header above)
 
-::
+.. code-block:: guess
 
-    $ curl -XPATCH http://localhost:5000/flump/user/1 -H "Content-Type: application/json" -d '{"data": {"attributes": {"username": "newcarl"}, "type": "user", "id": "1"}}' -H "If-Match: 0.22761545310897413"
+    $ curl -XPATCH http://localhost:5000/flump/user/1 -H "Content-Type: application/json" -d '{"data": {"attributes": {"username": "newcarl"}, "type": "user", "id": "1"}}' -H "If-Match: 32fc216a-f385-4fbc-9404-9ba44ea4e8eb"
 
     HTTP/1.0 200 OK
     Content-Type: application/vnd.api+json
     Content-Length: 212
-    ETag: "0.10147410721726091"
+    ETag: "cd5d56b0-a3bb-4d13-8f39-46b20b0580d2"
     Server: Werkzeug/0.11 Python/3.4.2
 
     {
@@ -118,44 +120,47 @@ Note that the Etag in the response header has a new value.
 
 Finally you can then delete the User:
 
-::
+.. code-block:: guess
 
-    $ curl -XDELETE  http://localhost:5000/flump/user/1 -H "If-Match: 0.10147410721726091" -i
+    $ curl -XDELETE  http://localhost:5000/flump/user/1 -H "If-Match: cd5d56b0-a3bb-4d13-8f39-46b20b0580d2 -i
 
     HTTP/1.0 204 NO CONTENT
     Content-Type: application/vnd.api+json
     Content-Length: 0
     Server: Werkzeug/0.11 Python/3.4.2
 
+.. _basic-auth-example:
 
 SQLAlchemy Example with Basic Auth
 ==============================
+
+Before reading through this example, we recommend reading through :ref:`sqlalchemy-auth`.
 
 Our first example was very simple, and we can now show how easily extensible Flump is by adding some basic
 authentication to our API.
 
 As with the basic example above, you will first need to change directory to the examples directory
 
-::
+.. code-block:: guess
 
     $ cd docs/examples
 
 You will then need to install the `sqlalchemy-requirements.txt` file to run this example:
 
-::
+.. code-block:: guess
 
     $ pip install -r sqlalchemy-requirements.txt
 
 You can now run the code from sqlalchemy-auth.py by running:
 
-::
+.. code-block:: guess
 
     $ python sqlalchemy-auth.py
 
 We now have an API with Basic Authentication running on `http://localhost:5000`, we can verify this
 with the following `curl` command:
 
-::
+.. code-block:: guess
 
     $ curl http://localhost:5000/flump/user/ -i
 
@@ -172,7 +177,7 @@ with the following `curl` command:
 As shown in the response, we have not authenticated. The `sqlalchemy-auth.py` file has helpfully created a User for us, so we can
 run the same example as above, but include the Basic Authentication needed to authenticate:
 
-::
+.. code-block:: guess
 
     $ curl http://localhost:5000/flump/user/ -u"test@test.com:password" -i
 
@@ -208,30 +213,32 @@ We can then run any of the same commands as in the simple Sqlalchemy example abo
 Example with limited HTTP Methods
 ==================================
 
+Before reading through this example, we recommend reading through :ref:`limited-http-methods`.
+
 Now say we only wish to support creating and retrieving entities, we can do this by following the example
 shown in `limited-http-methods.py`
 
 As with the examples above, you will first need to change directory to the examples directory
 
-::
+.. code-block:: guess
 
     $ cd docs/examples
 
 You will then need to install the `sqlalchemy-requirements.txt` file to run this example:
 
-::
+.. code-block:: guess
 
     $ pip install -r limited-http-methods-requirements.txt
 
 You can now run the code from sqlalchemy-auth.py by running:
 
-::
+.. code-block:: guess
 
     $ python limited-http-methods.py
 
 First off we check we can create a User:
 
-::
+.. code-block:: guess
 
     $ curl -XPOST http://localhost:5000/flump/user/ -H "Content-Type: application/json" -d '{"data": {"attributes": {"name": "carl"}, "type": "user"}}' -i
 
@@ -257,7 +264,7 @@ First off we check we can create a User:
 
 We then check we can retrieve the User:
 
-::
+.. code-block:: guess
 
     curl http://localhost:5000/flump/user/1 -i
 
@@ -282,7 +289,7 @@ We then check we can retrieve the User:
 
 Which also works! Now let's see what happens when we try to update our User:
 
-::
+.. code-block:: guess
 
     $ curl -XPATCH http://localhost:5000/flump/user/1 -H "Content-Type: application/json" -d '{"data": {"attributes": {"name": "newcarl"}, "type": "user", "id": "1"}}' -H "If-Match: 3aed8692-ab10-42f2-ab67-3b24b20b8669" -i
 
@@ -297,7 +304,7 @@ Which also works! Now let's see what happens when we try to update our User:
 
 We see that this HTTP method is not implemented. And trying to `DELETE` our User:
 
-::
+.. code-block:: guess
 
     $ curl -XDELETE http://localhost:5000/flump/user/1 -H "If-Match: 3aed8692-ab10-42f2-ab67-3b24b20b8669" -i
 

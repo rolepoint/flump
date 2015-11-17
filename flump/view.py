@@ -21,8 +21,7 @@ class FlumpView(Patch, Delete, GetMany, GetSingle, Post, BaseFlumpView):
 
     * ``get_many_entities``, which returns all of the entities available.
 
-    * ``get_total_entities``,  which should return a count of the total number
-    of entities.
+    * ``get_total_entities``,  which should return a count of the total number of entities.
 
     :param resource_schema: The schema describing the resource. Should be
                             an instance of :class:`flump.FlumpSchema`

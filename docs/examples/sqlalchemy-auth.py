@@ -1,4 +1,4 @@
-import random
+import uuid
 
 from flask import Flask, request
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -27,7 +27,7 @@ class User(db.Model):
     _password = db.Column(db.Text)
 
     # All Flump models must have an etag field.
-    etag = db.Column(db.Float)
+    etag = db.Column(db.Text)
 
     def __init__(self, *args, password=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -60,12 +60,12 @@ class UserSchema(FlumpSchema):
             setattr(existing_entity, k, v)
 
         # Ensure the etag is updated.
-        existing_entity.etag = random.random()
+        existing_entity.etag = str(uuid.uuid4())
         return existing_entity
 
     def create_entity(self, data):
         # Note that as this is a new model it must be added to the session
-        model = User(etag=random.random(), **data)
+        model = User(etag=str(uuid.uuid4()), **data)
         db.session.add(model)
         # We must flush the session so an ID is assigned to our Model, and we
         # can therefore return the ID.

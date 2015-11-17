@@ -58,6 +58,8 @@ BaseFlumpView
 .. autoclass:: flump.base_view.BaseFlumpView
     :members:
 
+.. _pagesizepagination:
+
 PageSizePagination
 ==================
 
@@ -73,8 +75,12 @@ schemas
 .. automethod:: flump.schemas.make_entity_schema
 
 
-
 _FlumpMethodView
 ======================
 
 .. autoclass:: flump.base_view._FlumpMethodView
+
+Validators
+======================
+
+.. autoclass:: flump.validators.Immutable
