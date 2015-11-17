@@ -27,7 +27,7 @@ class TestImmutable:
             'errors': {
                 'data': {
                     'attributes': {
-                        'name': ['Immutable.']
+                        'name': ["Can't update immutable fields."]
                     }
                 }
             },
