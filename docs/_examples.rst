@@ -5,3 +5,5 @@
 ..include:: examples/sqlalchemy-auth.rst
 
 ..include:: examples/sqlalchemy-basic.rst
+
+..include:: examples/immutable-field.rst

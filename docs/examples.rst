@@ -224,13 +224,13 @@ As with the examples above, you will first need to change directory to the examp
 
     $ cd docs/examples
 
-You will then need to install the `sqlalchemy-requirements.txt` file to run this example:
+You will then need to install the `basic-requirments.txt` file to run this example:
 
 .. code-block:: guess
 
-    $ pip install -r limited-http-methods-requirements.txt
+    $ pip install -r basic-requirements.txt
 
-You can now run the code from sqlalchemy-auth.py by running:
+You can now run the code from limited-http-methods.py by running:
 
 .. code-block:: guess
 
@@ -319,3 +319,83 @@ We see that this HTTP method is not implemented. And trying to `DELETE` our User
     }
 
 We see that this is not supported either.
+
+Example with Immutable field
+==================================
+
+Before reading through this example, we recommend reading through :ref:`immutable-field`.
+
+Now we address the case where we may have a field which we wish to allow users to create an entity, but not to update it.
+
+As with the examples above, you will first need to change directory to the examples directory
+
+.. code-block:: guess
+
+    $ cd docs/examples
+
+You will then need to install the `basic-requirements.txt` file to run this example:
+
+.. code-block:: guess
+
+    $ pip install -r basic-requirements.txt
+
+You can now run the code from immutable-field.py by running:
+
+.. code-block:: guess
+
+    $ python immutable-field.py
+
+
+First off we check we can create a User:
+
+.. code-block:: guess
+
+    $ curl -XPOST http://localhost:5000/flump/user/ -H "Content-Type: application/json" -d '{"data": {"attributes": {"name": "carl", "age": 26}, "type": "user"}}' -i
+
+    HTTP/1.0 201 CREATED
+    Content-Type: application/vnd.api+json
+    Content-Length: 186
+    Location: https://localhost:5000/flump/user/1
+    ETag: "523624cb-3e0e-457f-9659-334e60dbc72e"
+    Server: Werkzeug/0.11 Python/3.4.2
+
+    {
+      "data": {
+        "attributes": {
+          "name": "carl",
+          "age": 26
+        },
+        "id": "1",
+        "type": "user"
+      },
+      "links": {
+        "self": "https://localhost:5000/flump/user/1"
+      }
+    }
+
+Next we try to update the name field, which we have specified as being immutable:
+
+.. code-block:: guess
+
+    $ curl -XPATCH http://localhost:5000/flump/user/1 -H "Content-Type: application/json" -d '{"data": {"attributes": {"name": "newcarl"}, "type": "user", "id": "1"}}' -H "If-Match: 523624cb-3e0e-457f-9659-334e60dbc72e" -i
+
+    HTTP/1.0 422 UNPROCESSABLE ENTITY
+    Content-Type: application/vnd.api+json
+    Content-Length: 194
+    Server: Werkzeug/0.11 Python/3.4.2
+    Date: Tue, 17 Nov 2015 17:56:15 GMT
+
+    {
+      "errors": {
+        "data": {
+          "attributes": {
+            "name": [
+              "Can't update immutable fields."
+            ]
+          }
+        }
+      },
+      "message": "JSON does not match expected schema"
+    }
+
+Which as we can see was not possible due to the field being immutable.
