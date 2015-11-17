@@ -1,3 +1,7 @@
+# v0.4.1 (17/11/15)
+
+- Add Immutable validator
+
 # v0.4.0 (10/11/15)
 
 - Add GET MANY support
