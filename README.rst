@@ -1,11 +1,11 @@
 Flump is a database agnostic api builder which depends on `Flask`_ and
 `Marshmallow`_.
 
-Marshmallow is used to provide the Schemas against which data is
-validated and returned.
-
 Flump tries to be as flexible as possible, giving no strong opinions/implementations
 for many common API features, such as; pagination, filtering, ordering, authentication etc.. Instead Flump provides easily mixed in classes which also provide a common interface for extending itself to your needs.
+
+Marshmallow is used to provide the Schemas against which data is
+validated and returned.
 
 ----------------
 Getting Started
@@ -77,7 +77,7 @@ methods:
 
 * ``delete_entity``, which deletes the given instantiated ``entity``.
 
-* ``get_many_entities``, which returns all of the entities available.
+* ``get_many_entities``, which returns all of the entities available. If you would like to paginate the entities, we provide a mixin for this purpose. See :ref:`pagesizepagination`.
 
 * ``get_total_entities``,  which should return a count of the total number of entities.
 

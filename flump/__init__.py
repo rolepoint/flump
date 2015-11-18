@@ -96,7 +96,7 @@ class FlumpSchema(Schema):
     @post_load
     def handle_entity(self, data):
         """
-        Either updates an existing entity if one is provide in the context, or
+        Either updates an existing entity if one is provided in the context, or
         creates a new entity.
 
         :param data: The deserialized data dict.

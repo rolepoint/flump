@@ -21,7 +21,7 @@ You can now run the code from sqlalchemy-basic.py by running:
 
     $ python sqlalchemy-basic.py
 
-You now have a running CRUD API for a User model. You can query for all of the entities:
+You now have a running CRUD API for a User entity. You can query for all of the entities:
 
 .. code-block:: guess
 
@@ -122,7 +122,7 @@ Finally you can then delete the User:
 
 .. code-block:: guess
 
-    $ curl -XDELETE  http://localhost:5000/flump/user/1 -H "If-Match: cd5d56b0-a3bb-4d13-8f39-46b20b0580d2 -i
+    $ curl -XDELETE  http://localhost:5000/flump/user/1 -H "If-Match: cd5d56b0-a3bb-4d13-8f39-46b20b0580d2" -i
 
     HTTP/1.0 204 NO CONTENT
     Content-Type: application/vnd.api+json

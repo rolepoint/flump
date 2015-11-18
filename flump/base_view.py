@@ -31,7 +31,7 @@ class BaseFlumpView:
         """
         Handles HTTP GET requests.
 
-        Disapatches to either
+        Dispatches to either
         :func:`flump.view.FlumpView.get` or
         :func:`flump.view.FlumpView.get_many` depending on whether an
         `entity_id` has been provided.
