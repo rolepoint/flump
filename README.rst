@@ -132,5 +132,5 @@ Finally we need to hook up the blueprint to our Flask app:
 And you’re done!
 
 
-.. _Flask: https://flask.pocoo.org
+.. _Flask: http://flask.pocoo.org
 .. _Marshmallow: https://marshmallow.readthedocs.org
