@@ -1,3 +1,8 @@
+# v0.5.0 (19/11/15)
+
+- Fix immutable validator to not return the value as this would cause an issue if the value was `False`.
+- Add Sphinx documentation
+
 # v0.4.1 (17/11/15)
 
 - Add Immutable validator
