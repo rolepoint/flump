@@ -2,7 +2,7 @@ Flump is a database agnostic api builder which depends on `Flask`_ and
 `Marshmallow`_.
 
 Flump tries to be as flexible as possible, giving no strong opinions/implementations
-for many common API features, such as; pagination, filtering, ordering, authentication etc.. Instead Flump provides easily mixed in classes which also provide a common interface for extending itself to your needs.
+for many common API features, such as; pagination, filtering, ordering, authentication etc... Instead Flump provides easily mixed in classes which also provide a common interface for extending itself to your needs.
 
 Marshmallow is used to provide the Schemas against which data is
 validated and returned.
@@ -23,7 +23,7 @@ When updating, the FlumpSchema is provided with an existing entity.
 All entities used in Flump must have a field called `etag`, this should be a field
 which auto updates when modified, and is used for concurrency control. For more information see :ref:`etags-design`.
 
-When creating an entity they should also be provided with a unqiue identifier in
+When creating an entity they should also be provided with a unique identifier in
 a field called `id`. For more information see :ref:`ids-design`.
 
 For example when using Flask-SqlAlchemy ORM models you might define
@@ -102,7 +102,7 @@ methods:
 The Blueprint
 ===============
 
-To hook this into flask you should first create a FlumpBlueprint.
+To hook this into Flask you should first create a FlumpBlueprint.
 
 .. code-block:: python
 
@@ -111,7 +111,7 @@ To hook this into flask you should first create a FlumpBlueprint.
         flump_views=[UserView(UserSchema, 'user', '/user/')]
     )
 
-`FlumpBlueprint` acts like a normal Flask Blueprint, so you can register `before_request`, `after_request` & `teardown_request` handlers as usual.  For example with sqlalchemy we either want to ``commit`` or ``rollback`` any changes
+`FlumpBlueprint` acts like a normal Flask Blueprint, so you can register `before_request`, `after_request` & `teardown_request` handlers as usual.  For example with SQLAlchemy we either want to ``commit`` or ``rollback`` any changes
 which have been made, depending on whether there has been an exception:
 
 .. code-block:: python

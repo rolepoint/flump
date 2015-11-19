@@ -20,7 +20,7 @@ Authentication
 Etags
 -----------------
 
-Every entity used with Flump must have an `etag` field, this is used for concurrency control. Any time an entity is updated it must be assigned a new `etag`. This is to ensure users of your API are updating/deleting the current version of the entity.
+Every entity used with Flump must have an `etag` field which is used for concurrency control. Any time an entity is updated it must be assigned a new `etag`. This is to ensure users of your API are updating/deleting the current version of the entity.
 
 The current `etag` of the entity will be provided as a response `Etag` header to `GET` and `POST` requests.
 
