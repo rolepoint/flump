@@ -13,5 +13,3 @@ class Immutable(Validator):
     def __call__(self, value):
         if request.method == 'PATCH':
             raise ValidationError("Can't update immutable fields.")
-
-        return value
