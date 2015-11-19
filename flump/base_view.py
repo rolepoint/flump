@@ -14,6 +14,12 @@ class BaseFlumpView:
 
     View classes which inherit from this must provide `get_entity` and
     `delete_entity` methods.
+
+    :param resource_schema: The schema describing the resource. Should be
+                            an instance of :class:`flump.FlumpSchema`
+    :param resource_name:   The name of the resource type the API will be
+                            used for.
+    :param endpoint:        The URL endpoint the API should live at.
     """
 
     def __init__(self, resource_schema, resource_name, endpoint):
@@ -21,33 +27,37 @@ class BaseFlumpView:
         self.resource_name = resource_name
         self.endpoint = endpoint
 
-    def get_total_entities(self, **kwargs):
+    def get(self, entity_id=None, **kwargs):
         """
-        Should return an integer for the total number of entities.
-        """
-        raise NotImplementedError
+        Handles HTTP GET requests.
 
-    def get_many_entities(self, **kwargs):
-        """
-        Should return an iterable of entities.
+        Dispatches to either
+        :func:`flump.view.FlumpView.get` or
+        :func:`flump.view.FlumpView.get_many` depending on whether an
+        `entity_id` has been provided.
 
-        Note: If the PageSizePagination class has been mixed in, you can
-              get the pagination arguments through self.get_pagination_args()
+        :raises werkzeug.exceptions.NotImplemented: If the method requested has
+                                                    not been mixed in.
         """
-        raise NotImplementedError
+        return (
+            self.get_single(entity_id, **kwargs) if entity_id
+            else self.get_many(**kwargs)
+        )
 
-    def get_entity(self, entity_id, **kwargs):
-        """
-        Should provide a method of retrieving a single entity given the
-        `entity_id`.
-        """
-        raise NotImplementedError
+    def get_many(self, **kwargs):
+        raise WerkzeugNotImplemented
 
-    def delete_entity(self, entity):
-        """
-        Should provide a method of deleting a single entity given the `entity`.
-        """
-        raise NotImplementedError
+    def get_single(self, entity_id, **kwargs):
+        raise WerkzeugNotImplemented
+
+    def post(self, **kwargs):
+        raise WerkzeugNotImplemented
+
+    def delete(self, entity_id, **kwargs):
+        raise WerkzeugNotImplemented
+
+    def patch(self, entity_id, **kwargs):
+        raise WerkzeugNotImplemented
 
     @property
     def data_schema(self):
@@ -66,26 +76,34 @@ class BaseFlumpView:
         return make_response_schema(self.resource_schema,
                                     only=self._get_sparse_fieldset())
 
-    def get_many(self, **kwargs):
-        raise WerkzeugNotImplemented
+    def get_total_entities(self, **kwargs):
+        """
+        :returns: Should return an integer of the total number of entities.
+        """
+        raise NotImplementedError
 
-    def get_single(self, entity_id=None, **kwargs):
-        raise WerkzeugNotImplemented
+    def get_many_entities(self, **kwargs):
+        """
+        :returns: Should return an iterable of entities.
 
-    def get(self, entity_id=None, **kwargs):
-        return (
-            self.get_single(entity_id, **kwargs) if entity_id
-            else self.get_many(**kwargs)
-        )
+        .. note::
 
-    def post(self, **kwargs):
-        raise WerkzeugNotImplemented
+              If the PageSizePagination class has been mixed in, you can
+              get the pagination arguments through `self.get_pagination_args()`
+        """
+        raise NotImplementedError
 
-    def delete(self, entity_id, **kwargs):
-        raise WerkzeugNotImplemented
+    def get_entity(self, entity_id, **kwargs):
+        """
+        Should provide a method of retrieving a single entity given the
+        `entity_id` and `**kwargs`.
 
-    def patch(self, entity_id, **kwargs):
-        raise WerkzeugNotImplemented("Coming Soon.")
+        :param entity_id: The id of the entity to be retrieved.
+        :param \**kwargs: Any other kwargs taken from the url which are used
+                          for identifying the entity to be retrieved.
+        :returns: The entity identified by `entity_id` and `**kwargs`.
+        """
+        raise NotImplementedError
 
     def _get_sparse_fieldset(self):
         """
@@ -117,6 +135,12 @@ class BaseFlumpView:
 
 
 class _FlumpMethodView(MethodView):
+    """
+    :func:`flask.Blueprint.add_url_rule` does not allow us to pass instantiated
+    instances of :class:`MethodView` as the view_func, so instead we store the
+    instantiated instance of our route handlers on this class, and pass args
+    and kwargs through to the view methods manually.
+    """
     def __init__(self, flump_view):
         self.flump_view = flump_view
 

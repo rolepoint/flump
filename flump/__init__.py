@@ -1,11 +1,14 @@
 """
-An API builder which depends on Flask and Marshmallow.
+    flump
+    ~~~~~
+    An API builder which depends on Flask and Marshmallow and follows
+    http://jsonapi.org.
 
-As far as possible tries to follow http://jsonapi.org
+    .. note:: Currently missing content negotation
+             (http://jsonapi.org/format/#content-negotiation-servers), possibly
+             to be added in a later version.
 
-Currently missing content negotation
-http://jsonapi.org/format/#content-negotiation-servers, possible to be added in
-a later version
+    :copyright: (c) 2015 by RolePoint.
 """
 __version__ = "0.4.1"
 
@@ -24,11 +27,16 @@ MIMETYPE = 'application/vnd.api+json'
 
 class FlumpBlueprint(Blueprint):
     """
-    Exactly the same as a Flask Blueprint, but provides a convenience method
-    for registering FlumpView routes.
+    A specialised Flask Blueprint for Marshmallow, which provides a convenience
+    method for registering FlumpView routes.
 
-    Also provides some default logging, and adds the 'application/vnd.api+json'
-    Content-Type header to all responses.
+    Provides some default logging, which is disabled by default. This logs the
+    request HTTP method, the kwargs passed to the view endpoint, and the
+    request JSON body.
+
+    Adds the 'application/vnd.api+json' Content-Type header to all responses.
+
+    :param flump_views: A list of :class:`.view.FlumpView`
     """
     def __init__(self, *args, flump_views=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -59,6 +67,8 @@ class FlumpBlueprint(Blueprint):
         """
         Registers the various URL rules for the given `flump_view` on the
         Blueprint.
+
+        :param flump_view: The :class:`.view.FlumpView` to register URLs for.
         """
         view_func = _FlumpMethodView.as_view(flump_view.resource_name,
                                              flump_view=flump_view)
@@ -74,8 +84,8 @@ class FlumpBlueprint(Blueprint):
 
 class FlumpSchema(Schema):
     """
-    The basic Schema which all `FlumpView.base_schema` should be an instance
-    of.
+    The basic Schema which all :paramref:`flump.view.FlumpView.resource_schema`
+    should be an instance of.
 
     Provides automatic entity creation/updating through the `post_load` hook.
 
@@ -83,31 +93,38 @@ class FlumpSchema(Schema):
     `create_entity` methods to create/update entities.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @post_load
     def handle_entity(self, data):
+        """
+        Either updates an existing entity if one is provided in the context, or
+        creates a new entity.
+
+        :param data: The deserialized data dict.
+        :returns: Either a new entity if we have a `POST` request, or the
+                  updated entity if it is a `PATCH` request.
+        """
         existing_entity = self.context.get('existing_entity')
         if existing_entity:
             return self.update_entity(existing_entity, data)
 
         return self.create_entity(data)
 
-    def update_entity(self, data):
+    def update_entity(self, existing_entity, data):
         """
         Should update an entity from the given data.
 
-        `data` will be a dict whose key/values correspond to the schema
-        attributes after being loaded.
+        :param existing_entity: The instance returned from
+                                :func:`.view.FlumpView.get_entity`
+        :param data: The deserialized data dict.
+        :returns: The updated entity.
         """
         raise NotImplementedError
 
-    def create_entity(self, existing_entity, data):
+    def create_entity(self, data):
         """
         Should save an entity from the given data.
 
-        `data` will be a dict whose key/values correspond to the schema
-        attributes after being loaded.
+        :param data: The deserialized data dict.
+        :returns: The newly created entity.
         """
         raise NotImplementedError

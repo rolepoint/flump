@@ -6,15 +6,20 @@ from ..schemas import EntityData, ResponseData
 
 
 class GetSingle:
-    def get_single(self, entity_id=None, **kwargs):
+    def get_single(self, entity_id, **kwargs):
         """
-        Gets a single instance from the entity_id using `self.get_entity`.
+        Handles HTTP GET requests where a entity is specified.
 
         If an etag is provided and matches the current etag, returns a 304 (Not
         Modfied).
 
         Otherwise dumps the retrieved entity to JSON based on the current
         schema and returns it.
+
+        :param entity_id: The entity_id used to retrieve the entity using
+                          :func:`flump.view.FlumpView.get_entity`
+        :param \**kwargs: Any other kwargs taken from the url which are used
+                          for identifying the entity to retrieve.
         """
         entity = self.get_entity(entity_id, **kwargs)
         if not entity:

@@ -19,7 +19,12 @@ class PageSizePagination:
 
     def get_pagination_args(self):
         """
-        Returns the pagination args, accounting for defaults and maximums.
+        Gets the pagination args from the query string.
+
+        :returns: :class:`PaginationArgs` containing the page number and page
+                  sizes specified. Accounts for
+                  :attribute:`PageSizePagination.DEFAULT_PAGE_SIZE` and
+                  :attribute:`PageSizePagination.MAX_PAGE_SIZE`.
         """
         page = int(request.args.get('page[number]') or 1)
         size = int(request.args.get('page[size]') or self.DEFAULT_PAGE_SIZE)
@@ -30,6 +35,9 @@ class PageSizePagination:
         """
         Returns a dict containing all of the pagination links required by
         jsonapi.
+
+        :param `**kwargs: kwargs used for constructing the pagination links.
+        :returns: Dict containing the pagination links required by jsonapi.
         """
         args = self.get_pagination_args()
         total_entities = self.get_total_entities(**kwargs)
@@ -53,10 +61,10 @@ class PageSizePagination:
             'next': make_url(args.page + 1) if args.page < num_pages else None
         }
 
-    def make_get_many_response(self, entity_data, **kwargs):
+    def _make_get_many_response(self, entity_data, **kwargs):
         """
         Returns a `schemas.ManyResponseData` with the links replaced with
         those returned by `get_pagination_links`.
         """
-        response = super().make_get_many_response(entity_data, **kwargs)
+        response = super()._make_get_many_response(entity_data, **kwargs)
         return response._replace(links=self.get_pagination_links(**kwargs))

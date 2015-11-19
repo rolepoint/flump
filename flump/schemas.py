@@ -19,6 +19,17 @@ def make_data_schema(
     """
     Constructs a Schema describing the main jsonapi format for the
     current `resource_schema`.
+
+    :param resource_schema: The schema describing the resource. Should be
+                            an instance of :class:`flump.FlumpSchema`
+    :param only:            A list or tuple of fields to serialize on the
+                            `resource_schema`, if None, all fields will be
+                            serialized.
+    :param partial:         If True, ignore missing fields on the
+                            `resource_schema` when deserializing.
+    :param id_required:     Whether or not the `id` field of the returned
+                            `JsonApiSchema`
+    :returns:               :class:`make_data_schema.JsonApiSchema`
     """
 
     class JsonApiSchema(Schema):
@@ -49,7 +60,16 @@ def make_data_schema(
 
 def make_response_schema(resource_schema, only=None, many=False):
     """
-    Constructs schema describing the format of a response according to jsonapi.
+    Constructs Schema describing the format of a response according to jsonapi.
+
+    :param resource_schema: The schema describing the resource. Should be
+                            an instance of :class:`flump.FlumpSchema`
+    :param only:            A list or tuple of fields to serialize on the
+                            `resource_schema`, if None, all fields will be
+                            serialized.
+    :param many:            Should be set to True if we are returning multiple
+                            entities.
+    :returns:               :class:`make_response_schema.JsonApiResponseSchema`
     """
     data_schema = make_data_schema(resource_schema, only=only)
 
@@ -75,6 +95,13 @@ def make_entity_schema(resource_schema, resource_name, data_schema):
     """
     Constructs a schema describing the format of POST/PATCH requests for
     jsonapi. Provides automatic error checking for the data format.
+
+    :param resource_schema: The schema describing the resource. Should be
+                            an instance of :class:`flump.FlumpSchema`
+    :param resource_name:   The name of the resource type defined for the API.
+    :param data_schema:     An instance or
+                            :class:`make_data_schema.JsonApiSchema`.
+    :returns:               :class:`make_entity_schema.JsonApiPostSchema`
     """
 
     class JsonApiPostSchema(Schema):
