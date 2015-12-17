@@ -89,10 +89,8 @@ class UserView(FlumpView):
 
 
 # Instantiate our FlumpBlueprint ready for hooking up to our Flask app.
-blueprint = FlumpBlueprint(
-    'flump-example', __name__,
-    flump_views=[UserView(UserSchema, 'user', '/user/')]
-)
+blueprint = FlumpBlueprint('flump-example', __name__)
+blueprint.register_flump_view(UserView(UserSchema, 'user', '/user/'))
 
 
 # Define some request teardown, this is necessary to either commit, or rollback

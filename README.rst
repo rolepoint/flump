@@ -108,8 +108,8 @@ To hook this into Flask you should first create a FlumpBlueprint.
 
     blueprint = FlumpBlueprint(
         'flump', __name__,
-        flump_views=[UserView(UserSchema, 'user', '/user/')]
     )
+    blueprint.register_flump_view(UserView(UserSchema, 'user', '/user/'))
 
 `FlumpBlueprint` acts like a normal Flask Blueprint, so you can register `before_request`, `after_request` & `teardown_request` handlers as usual.  For example with SQLAlchemy we either want to ``commit`` or ``rollback`` any changes
 which have been made, depending on whether there has been an exception:

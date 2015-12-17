@@ -73,16 +73,15 @@ class FlumpTestResponse(Response):
 @pytest.yield_fixture
 def app(view_and_schema):
     view_class, schema, _ = view_and_schema
-    flump_view = view_class(schema, 'user', '/user/')
+    blueprint = FlumpBlueprint('flump', __name__)
+    blueprint.register_flump_view(view_class(schema, 'user', '/user/'))
 
     app = Flask(__name__)
     app.response_class = FlumpTestResponse
     app.config['SERVER_NAME'] = 'localhost'
     app.config['SERVER_PROTOCOL'] = 'http'
-    app.register_blueprint(
-        FlumpBlueprint('flump', __name__, flump_views=[flump_view]),
-        url_prefix='/tester'
-    )
+
+    app.register_blueprint(blueprint, url_prefix='/tester')
 
     ctx = app.app_context()
     ctx.push()

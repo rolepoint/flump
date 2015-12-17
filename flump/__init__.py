@@ -35,14 +35,9 @@ class FlumpBlueprint(Blueprint):
     request JSON body.
 
     Adds the 'application/vnd.api+json' Content-Type header to all responses.
-
-    :param flump_views: A list of :class:`.view.FlumpView`
     """
-    def __init__(self, *args, flump_views=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        for view in (flump_views or []):
-            self.register_flump_view(view)
 
         register_error_handlers(self)
 
@@ -80,6 +75,16 @@ class FlumpBlueprint(Blueprint):
         self.add_url_rule('{}<entity_id>'.format(flump_view.endpoint),
                           view_func=view_func,
                           methods=('GET', 'PATCH', 'DELETE'))
+
+    def register_flump_views(self, flump_views):
+        """
+        Registers the various URL rules for each of the the given `flump_views`
+        on the Blueprint.
+
+        :param flump_views: List of :class:`.view.FlumpView` to register URLs for.
+        """
+        for flump_view in flump_views:
+            self.register_flump_view(flump_view)
 
 
 class FlumpSchema(Schema):
