@@ -5,10 +5,8 @@ from flump import FlumpSchema, FlumpView, FlumpBlueprint
 
 
 def test_flump_blueprint():
-    blueprint = FlumpBlueprint(
-        'test_flump', __name__,
-        flump_views=[FlumpView(None, 'blah', '/endpoint/')]
-    )
+    blueprint = FlumpBlueprint('test_flump', __name__)
+    blueprint.register_flump_view(FlumpView(None, 'blah', '/endpoint/'))
 
     assert blueprint.name == 'test_flump'
 

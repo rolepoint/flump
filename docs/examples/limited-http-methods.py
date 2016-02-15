@@ -49,10 +49,8 @@ class UserView(GetMany, GetSingle, Post, BaseFlumpView):
 
 
 # Instantiate our FlumpBlueprint ready for hooking up to our Flask app.
-blueprint = FlumpBlueprint(
-    'flump-example', __name__,
-    flump_views=[UserView(UserSchema, 'user', '/user/')]
-)
+blueprint = FlumpBlueprint('flump-example', __name__)
+blueprint.register_flump_view(UserView(UserSchema, 'user', '/user/'))
 
 # Create our app and register our Blueprint
 app = Flask(__name__)
