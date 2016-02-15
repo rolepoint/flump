@@ -1,3 +1,10 @@
+# v0.6.0 (15/02/15)
+
+Note: This is a breaking change, but as we haven't released yet we aren't bumping the major version.
+
+- Remove FlumpSchema and instead direct users to use a `marshmallow.Schema`
+- Provide `update_entity` and `create_entity` stubs on the `Patch` and `Post` mixins respectively.
+
 # v0.5.0 (19/11/15)
 
 - Fix immutable validator to not return the value as this would cause an issue if the value was `False`.

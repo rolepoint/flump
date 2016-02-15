@@ -10,7 +10,7 @@
 
     :copyright: (c) 2015 by RolePoint.
 """
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
 import logging
 
