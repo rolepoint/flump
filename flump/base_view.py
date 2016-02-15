@@ -39,10 +39,9 @@ class BaseFlumpView:
         :raises werkzeug.exceptions.NotImplemented: If the method requested has
                                                     not been mixed in.
         """
-        return (
-            self.get_single(entity_id, **kwargs) if entity_id
-            else self.get_many(**kwargs)
-        )
+        if entity_id:
+            return self.get_single(entity_id, **kwargs)
+        return self.get_many(**kwargs)
 
     def get_many(self, **kwargs):
         raise WerkzeugNotImplemented
