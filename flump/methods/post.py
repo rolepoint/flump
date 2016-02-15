@@ -25,13 +25,22 @@ class Post:
         """
         return request.json
 
+    def create_entity(self, data):
+        """
+        Should save an entity from the given data.
+
+        :param data: The deserialized data dict.
+        :returns: The newly created entity.
+        """
+        raise NotImplementedError
+
     def post(self, **kwargs):
         """
         Handles HTTP POST requests.
 
         Creates an entity based on the current schema and request json. The
-        schema should provide a method for creating the entity using
-        :func:`flump.FlumpSchema.create_entity`
+        view should provide a method for creating the entity using
+        :func:`Post.create_entity`
 
         :param \**kwargs: Any kwargs taken from the url which are used
                           for building the url identifying the new entity.
@@ -44,6 +53,10 @@ class Post:
             raise Forbidden(
                 'You must not specify an id when creating an entity'
             )
+
+        entity_data = entity_data._replace(
+            attributes=self.create_entity(entity_data.attributes)
+        )
 
         url = url_for('.{}'.format(self.resource_name), _external=True,
                       entity_id=entity_data.attributes.id, _method='GET',

@@ -15,7 +15,6 @@ __version__ = "0.5.0"
 import logging
 
 from flask import Blueprint, request
-from marshmallow import Schema, post_load
 
 from .base_view import _FlumpMethodView
 from .error_handlers import register_error_handlers
@@ -85,51 +84,3 @@ class FlumpBlueprint(Blueprint):
         """
         for flump_view in flump_views:
             self.register_flump_view(flump_view)
-
-
-class FlumpSchema(Schema):
-    """
-    The basic Schema which all :paramref:`flump.view.FlumpView.resource_schema`
-    should be an instance of.
-
-    Provides automatic entity creation/updating through the `post_load` hook.
-
-    Classes inheriting from this MUST provide `update_entity` and
-    `create_entity` methods to create/update entities.
-    """
-
-    @post_load
-    def handle_entity(self, data):
-        """
-        Either updates an existing entity if one is provided in the context, or
-        creates a new entity.
-
-        :param data: The deserialized data dict.
-        :returns: Either a new entity if we have a `POST` request, or the
-                  updated entity if it is a `PATCH` request.
-        """
-        existing_entity = self.context.get('existing_entity')
-        if existing_entity:
-            return self.update_entity(existing_entity, data)
-
-        return self.create_entity(data)
-
-    def update_entity(self, existing_entity, data):
-        """
-        Should update an entity from the given data.
-
-        :param existing_entity: The instance returned from
-                                :func:`.view.FlumpView.get_entity`
-        :param data: The deserialized data dict.
-        :returns: The updated entity.
-        """
-        raise NotImplementedError
-
-    def create_entity(self, data):
-        """
-        Should save an entity from the given data.
-
-        :param data: The deserialized data dict.
-        :returns: The newly created entity.
-        """
-        raise NotImplementedError

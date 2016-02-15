@@ -3,10 +3,10 @@ import json
 import uuid
 
 from flask import Flask, Response
-from marshmallow import fields
+from marshmallow import fields, Schema
 import pytest
 
-from flump import FlumpView, FlumpSchema, FlumpBlueprint, MIMETYPE
+from flump import FlumpView, FlumpBlueprint, MIMETYPE
 
 
 User = namedtuple('User', ('id', 'etag', 'name', 'age'))
@@ -39,10 +39,6 @@ def view_and_schema():
             nonlocal instances
             instances.pop(int(entity.id) - 1)
 
-    class UserFlumpSchema(FlumpSchema):
-        name = fields.Str(required=True)
-        age = fields.Integer(required=True)
-
         def create_entity(self, data):
             nonlocal instances
             entity = User(str(len(instances) + 1), uuid.uuid4(),
@@ -53,7 +49,11 @@ def view_and_schema():
         def update_entity(self, existing_entity, data):
             return existing_entity._replace(**data)
 
-    return UserFlumpView, UserFlumpSchema, instances
+    class UserSchema(Schema):
+        name = fields.Str(required=True)
+        age = fields.Integer(required=True)
+
+    return UserFlumpView, UserSchema, instances
 
 
 class FlumpTestResponse(Response):

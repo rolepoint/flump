@@ -21,7 +21,7 @@ def make_data_schema(
     current `resource_schema`.
 
     :param resource_schema: The schema describing the resource. Should be
-                            an instance of :class:`flump.FlumpSchema`
+                            an instance of :class:`marshmallow.Schema`
     :param only:            A list or tuple of fields to serialize on the
                             `resource_schema`, if None, all fields will be
                             serialized.
@@ -63,7 +63,7 @@ def make_response_schema(resource_schema, only=None, many=False):
     Constructs Schema describing the format of a response according to jsonapi.
 
     :param resource_schema: The schema describing the resource. Should be
-                            an instance of :class:`flump.FlumpSchema`
+                            an instance of :class:`marshmallow.Schema`
     :param only:            A list or tuple of fields to serialize on the
                             `resource_schema`, if None, all fields will be
                             serialized.
@@ -97,7 +97,7 @@ def make_entity_schema(resource_schema, resource_name, data_schema):
     jsonapi. Provides automatic error checking for the data format.
 
     :param resource_schema: The schema describing the resource. Should be
-                            an instance of :class:`flump.FlumpSchema`
+                            an instance of :class:`marshmallow.Schema`
     :param resource_name:   The name of the resource type defined for the API.
     :param data_schema:     An instance or
                             :class:`make_data_schema.JsonApiSchema`.

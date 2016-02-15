@@ -16,7 +16,7 @@ class BaseFlumpView:
     `delete_entity` methods.
 
     :param resource_schema: The schema describing the resource. Should be
-                            an instance of :class:`flump.FlumpSchema`
+                            an instance of :class:`marshmallow.Schema`
     :param resource_name:   The name of the resource type the API will be
                             used for.
     :param endpoint:        The URL endpoint the API should live at.

@@ -30,13 +30,24 @@ class Patch:
         """
         return request.json
 
+    def update_entity(self, existing_entity, data):
+        """
+        Should update an entity from the given data.
+
+        :param existing_entity: The instance returned from
+                                :func:`.view.FlumpView.get_entity`
+        :param data: The deserialized data dict.
+        :returns: The updated entity.
+        """
+        raise NotImplementedError
+
     def patch(self, entity_id, **kwargs):
         """
         Handles HTTP PATCH requests.
 
         Updates an entity based on the current schema and request json. The
-        schema should provide a method for updating the entity using
-        :func:`flump.FlumpSchema.update_entity`.
+        view should provide a method for updating the entity using
+        :func:`Patch.update_entity`.
 
         :param entity_id: The entity_id used to retrieve the entity using
                           :func:`flump.view.FlumpView.get_entity`
@@ -48,15 +59,16 @@ class Patch:
             raise NotFound
         self._verify_etag(entity)
 
-        patch_schema = self._patch_schema(context={'existing_entity': entity})
-        entity_data, errors = patch_schema.load(self.patch_data)
+        entity_data, errors = self._patch_schema().load(self.patch_data)
         if errors:
             raise FlumpUnprocessableEntity(errors=errors)
 
-        data, _ = self.response_schema(strict=True).dump(
-            ResponseData(entity_data, {'self': request.url})
-        )
+        entity = self.update_entity(entity, entity_data.attributes)
 
+        response_data = ResponseData(entity_data._replace(attributes=entity),
+                                     {'self': request.url})
+
+        data, _ = self.response_schema(strict=True).dump(response_data)
         response = jsonify(data)
         response.set_etag(str(entity.etag))
         return response, 200
