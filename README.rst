@@ -15,10 +15,7 @@ The Schema
 ============
 
 You must define schemas describing your entities. These schemas should
-inherit from ``FlumpSchema`` and provide methods for saving/updating the
-entity.
-
-When updating, the FlumpSchema is provided with an existing entity.
+inherit from ``marshmallow.Schema``.
 
 All entities used in Flump must have a field called `etag`, this should be a field
 which auto updates when modified, and is used for concurrency control. For more information see :ref:`etags-design`.
@@ -32,8 +29,7 @@ something like:
 .. code-block:: python
 
     from flask.ext.sqlalchemy import SQLAlchemy
-    from marshmallow import fields
-    from flump import FlumpSchema
+    from marshmallow import fields, Schema
 
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/basic-test.db'
@@ -48,23 +44,10 @@ something like:
     # Create the table in sqlite
     db.create_all()
 
-    class UserSchema(FlumpSchema):
+    class UserSchema(Schema):
 
         username = fields.Str()
         email = fields.Str()
-
-        def update_entity(self, existing_entity, data):
-            for k, v in data:
-                setattr(existing_entity, k, v)
-            return existing_entity
-
-        def create_entity(self, data):
-            # Note that as this is a new model it must be added to the session
-            model = User(**data)
-            db.session.add(model)
-            # Execute SQL and populate the ID field for the model
-            db.session.flush()
-            return model
 
 The View
 =========
@@ -81,9 +64,13 @@ methods:
 
 * ``get_total_entities``,  which should return a count of the total number of entities.
 
+* ``update_entity``, which should update the passed ``existing_entity`` and persist it in your chosen data store, then return the entity.
+
+* ``create_entity``, which should create an entity and persist it in your chosen data store, then return the entity.
+
 .. code-block:: python
 
-    from flump import FlumpSchema, FlumpView
+    from flump import FlumpView
 
     class UserView(FlumpView):
         def get_many_entities(self):
@@ -97,6 +84,19 @@ methods:
 
         def delete_entity(self, entity):
             db.session.delete(entity)
+
+        def update_entity(self, existing_entity, data):
+            for k, v in data:
+                setattr(existing_entity, k, v)
+            return existing_entity
+
+        def create_entity(self, data):
+            # Note that as this is a new model it must be added to the session
+            model = User(**data)
+            db.session.add(model)
+            # Execute SQL and populate the ID field for the model
+            db.session.flush()
+            return model
 
 
 The Blueprint

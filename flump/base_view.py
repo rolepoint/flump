@@ -16,7 +16,7 @@ class BaseFlumpView:
     `delete_entity` methods.
 
     :param resource_schema: The schema describing the resource. Should be
-                            an instance of :class:`flump.FlumpSchema`
+                            an instance of :class:`marshmallow.Schema`
     :param resource_name:   The name of the resource type the API will be
                             used for.
     :param endpoint:        The URL endpoint the API should live at.
@@ -39,10 +39,9 @@ class BaseFlumpView:
         :raises werkzeug.exceptions.NotImplemented: If the method requested has
                                                     not been mixed in.
         """
-        return (
-            self.get_single(entity_id, **kwargs) if entity_id
-            else self.get_many(**kwargs)
-        )
+        if entity_id:
+            return self.get_single(entity_id, **kwargs)
+        return self.get_many(**kwargs)
 
     def get_many(self, **kwargs):
         raise WerkzeugNotImplemented

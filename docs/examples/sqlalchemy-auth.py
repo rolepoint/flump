@@ -2,8 +2,8 @@ import uuid
 
 from flask import Flask, request
 from flask.ext.sqlalchemy import SQLAlchemy
-from flump import FlumpSchema, FlumpView, FlumpBlueprint
-from marshmallow import fields
+from flump import FlumpView, FlumpBlueprint
+from marshmallow import fields, Schema
 from werkzeug.exceptions import Unauthorized
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -48,11 +48,26 @@ class User(db.Model):
 
 # Define our User Schema, note that `password` is `load_only`, so we will never
 # write out the password as part of our api.
-class UserSchema(FlumpSchema):
+class UserSchema(Schema):
     username = fields.Str()
     email = fields.Email()
 
     password = fields.Str(load_only=True)
+
+
+# Define our FlumpView class with the necessary methods overridden.
+class UserView(FlumpView):
+    def get_many_entities(self):
+        return User.query.all()
+
+    def get_total_entities(self):
+        return User.query.count()
+
+    def get_entity(self, entity_id):
+        return User.query.get(entity_id)
+
+    def delete_entity(self, entity):
+        db.session.delete(entity)
 
     def update_entity(self, existing_entity, data):
         # Update the passed `existing_entity`.
@@ -71,21 +86,6 @@ class UserSchema(FlumpSchema):
         # can therefore return the ID.
         db.session.flush()
         return model
-
-
-# Define our FlumpView class with the necessary methods overridden.
-class UserView(FlumpView):
-    def get_many_entities(self):
-        return User.query.all()
-
-    def get_total_entities(self):
-        return User.query.count()
-
-    def get_entity(self, entity_id):
-        return User.query.get(entity_id)
-
-    def delete_entity(self, entity):
-        db.session.delete(entity)
 
 
 # Instantiate our FlumpBlueprint ready for hooking up to our Flask app.

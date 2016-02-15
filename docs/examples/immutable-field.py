@@ -3,9 +3,9 @@ import uuid
 
 
 from flask import Flask
-from flump import FlumpSchema, FlumpBlueprint, FlumpView
+from flump import FlumpBlueprint, FlumpView
 from flump.validators import Immutable
-from marshmallow import fields
+from marshmallow import fields, Schema
 
 # Our non-persistent "database"
 INSTANCES = []
@@ -14,21 +14,11 @@ INSTANCES = []
 User = namedtuple('User', ('id', 'etag', 'name', 'age'))
 
 
-# Our FlumpSchema, we make the name field `Immutable`, so we cannot update it
+# Our Schema, we make the name field `Immutable`, so we cannot update it
 # with a PATCH request.
-class UserSchema(FlumpSchema):
+class UserSchema(Schema):
     name = fields.Str(required=True, validate=(Immutable(),))
     age = fields.Integer(required=True)
-
-    def create_entity(self, data):
-        entity = User(
-            str(len(INSTANCES) + 1), uuid.uuid4(), data['name'], data['age']
-        )
-        INSTANCES.append(entity)
-        return entity
-
-    def update_entity(self, entity, data):
-        return entity._replace(**data)
 
 
 # Our FlumpView, with the necessary methods implemented.
@@ -50,6 +40,16 @@ class UserView(FlumpView):
 
     def delete_entity(self, entity_id):
         INSTANCES[int(entity_id) - 1] = None
+
+    def create_entity(self, data):
+        entity = User(
+            str(len(INSTANCES) + 1), uuid.uuid4(), data['name'], data['age']
+        )
+        INSTANCES.append(entity)
+        return entity
+
+    def update_entity(self, entity, data):
+        return entity._replace(**data)
 
 
 # Instantiate our FlumpBlueprint ready for hooking up to our Flask app.
