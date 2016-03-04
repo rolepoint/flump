@@ -11,6 +11,11 @@ validated and returned.
 Getting Started
 ----------------
 
+Installation
+============
+
+TODO(lukaszma) How do I install it? pip?
+
 The Schema
 ============
 
