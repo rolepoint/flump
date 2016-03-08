@@ -12,20 +12,11 @@ class BaseFlumpView:
     A base view from which all views provided to `FlumpBlueprint` must
     inherit.
 
-    View classes which inherit from this must provide `get_entity` and
-    `delete_entity` methods.
-
-    :param resource_schema: The schema describing the resource. Should be
-                            an instance of :class:`marshmallow.Schema`
-    :param resource_name:   The name of the resource type the API will be
-                            used for.
-    :param endpoint:        The URL endpoint the API should live at.
+    Classes which inherit from this must provide `get_entity` and
+    `delete_entity` methods. They should also provide provide `RESOURCE_NAME` &
+    `SCHEMA` attributes that specify the name of the resource, and the schema
+    to use for serialization/desieralization
     """
-
-    def __init__(self, resource_schema, resource_name, endpoint):
-        self.resource_schema = resource_schema
-        self.resource_name = resource_name
-        self.endpoint = endpoint
 
     def get(self, entity_id=None, **kwargs):
         """
@@ -61,19 +52,19 @@ class BaseFlumpView:
     @property
     def data_schema(self):
         """
-        Returns a Schema describing the main jsonapi format for the
-        current `resource_schema`.
+        A Schema describing the main jsonapi format for `SCHEMA`.
         """
-        return make_data_schema(self.resource_schema,
-                                self._get_sparse_fieldset())
+        return make_data_schema(self.SCHEMA, self._get_sparse_fieldset())
 
     @property
     def response_schema(self):
         """
         A schema describing the format of a response according to jsonapi.
         """
-        return make_response_schema(self.resource_schema,
-                                    only=self._get_sparse_fieldset())
+        return make_response_schema(
+            self.SCHEMA,
+            only=self._get_sparse_fieldset()
+        )
 
     def get_total_entities(self, **kwargs):
         """
@@ -109,7 +100,7 @@ class BaseFlumpView:
         Returns a list of fields which have been requested to be returned.
         """
         requested_fields = request.args.get(
-            'fields[{}]'.format(self.resource_name)
+            'fields[{}]'.format(self.RESOURCE_NAME)
         )
         if requested_fields:
             requested_fields = set(requested_fields.split(','))

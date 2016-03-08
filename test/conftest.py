@@ -17,6 +17,12 @@ def view_and_schema():
     instances = []
 
     class UserFlumpView(FlumpView):
+        RESOURCE_NAME = 'user'
+
+        class SCHEMA(Schema):
+            name = fields.Str(required=True)
+            age = fields.Integer(required=True)
+
         def get_entity(self, entity_id):
             nonlocal instances
             try:
@@ -49,11 +55,7 @@ def view_and_schema():
         def update_entity(self, existing_entity, data):
             return existing_entity._replace(**data)
 
-    class UserSchema(Schema):
-        name = fields.Str(required=True)
-        age = fields.Integer(required=True)
-
-    return UserFlumpView, UserSchema, instances
+    return UserFlumpView, UserFlumpView.SCHEMA, instances
 
 
 class FlumpTestResponse(Response):
@@ -74,12 +76,14 @@ class FlumpTestResponse(Response):
 def app(view_and_schema):
     view_class, schema, _ = view_and_schema
     blueprint = FlumpBlueprint('flump', __name__)
-    blueprint.register_flump_view(view_class(schema, 'user', '/user/'))
+    blueprint.register_flump_view(view_class, '/user/')
 
     app = Flask(__name__)
     app.response_class = FlumpTestResponse
     app.config['SERVER_NAME'] = 'localhost'
     app.config['SERVER_PROTOCOL'] = 'http'
+    app.config['DEBUG'] = True
+    app.config['TESTING'] = True
 
     app.register_blueprint(blueprint, url_prefix='/tester')
 

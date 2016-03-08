@@ -28,7 +28,7 @@ class GetSingle:
         if self._etag_matches(entity):
             return '', 304
 
-        entity_data = EntityData(entity.id, self.resource_name, entity)
+        entity_data = EntityData(entity.id, self.RESOURCE_NAME, entity)
         response_data, _ = self.response_schema(strict=True).dump(
             ResponseData(entity_data, {'self': request.url})
         )

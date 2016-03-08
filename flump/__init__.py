@@ -10,7 +10,6 @@
 
     :copyright: (c) 2015 by RolePoint.
 """
-__version__ = "0.6.0"
 
 import logging
 
@@ -18,7 +17,10 @@ from flask import Blueprint, request
 
 from .base_view import _FlumpMethodView
 from .error_handlers import register_error_handlers
-from .view import FlumpView  # (imported to provide access at top level) # noqa
+from .view import FlumpView
+
+__all__ = ['FlumpView', 'FlumpBlueprint']
+__version__ = "0.6.0"
 
 
 MIMETYPE = 'application/vnd.api+json'
@@ -57,30 +59,31 @@ class FlumpBlueprint(Blueprint):
             response.headers['Content-Type'] = MIMETYPE
             return response
 
-    def register_flump_view(self, flump_view):
+    def register_flump_view(self, view_class, url):
         """
         Registers the various URL rules for the given `flump_view` on the
         Blueprint.
 
         :param flump_view: The :class:`.view.FlumpView` to register URLs for.
         """
-        view_func = _FlumpMethodView.as_view(flump_view.resource_name,
+        flump_view = view_class()
+        view_func = _FlumpMethodView.as_view(flump_view.RESOURCE_NAME,
                                              flump_view=flump_view)
 
-        self.add_url_rule(flump_view.endpoint,
-                          methods=('GET',), view_func=view_func)
-        self.add_url_rule(flump_view.endpoint, view_func=view_func,
-                          methods=('POST',))
-        self.add_url_rule('{}<entity_id>'.format(flump_view.endpoint),
+        self.add_url_rule(url, methods=('GET',), view_func=view_func)
+        self.add_url_rule(url, view_func=view_func, methods=('POST',))
+        self.add_url_rule('{}<entity_id>'.format(url),
                           view_func=view_func,
                           methods=('GET', 'PATCH', 'DELETE'))
 
-    def register_flump_views(self, flump_views):
+    def flump_view(self, url):
         """
-        Registers the various URL rules for each of the the given `flump_views`
-        on the Blueprint.
+        A class decorator for registering a flump view.
 
-        :param flump_views: List of :class:`.view.FlumpView` to register URLs for.
+        :param url:   The URL to register the view under.
         """
-        for flump_view in flump_views:
-            self.register_flump_view(flump_view)
+        def flump_view_decorator(view_class):
+            self.register_flump_view(view_class, url)
+            return view_class
+
+        return flump_view_decorator

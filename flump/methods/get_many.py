@@ -7,7 +7,7 @@ class GetMany:
 
     @property
     def _many_response_schema(self):
-        return make_response_schema(self.resource_schema, many=True,
+        return make_response_schema(self.SCHEMA, many=True,
                                     only=self._get_sparse_fieldset())
 
     def _make_get_many_response(self, entity_data, **kwargs):
@@ -29,7 +29,7 @@ class GetMany:
                           entities to be returned.
         """
         entities = [
-            EntityData(i.id, self.resource_name, i)
+            EntityData(i.id, self.RESOURCE_NAME, i)
             for i in self.get_many_entities(**kwargs)
         ]
         data = self._make_get_many_response(entities, **kwargs)

@@ -14,6 +14,8 @@ class TestImmutable:
         class NotUpdateableSchema(schema):
             name = fields.Str(required=True, validate=(Immutable(),))
 
+        view.SCHEMA = NotUpdateableSchema
+
         return view, NotUpdateableSchema, instances
 
     def test_patch_does_not_allow_name_to_be_updated(self, flask_client):

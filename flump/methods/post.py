@@ -14,8 +14,8 @@ class Post:
         A schema describing the format of POST request for jsonapi. Provides
         automatic error checking for the data format.
         """
-        return make_entity_schema(self.resource_schema, self.resource_name,
-                                  make_data_schema(self.resource_schema))
+        return make_entity_schema(self.SCHEMA, self.RESOURCE_NAME,
+                                  make_data_schema(self.SCHEMA))
 
     @property
     def post_data(self):
@@ -58,7 +58,7 @@ class Post:
             attributes=self.create_entity(entity_data.attributes)
         )
 
-        url = url_for('.{}'.format(self.resource_name), _external=True,
+        url = url_for('.{}'.format(self.RESOURCE_NAME), _external=True,
                       entity_id=entity_data.attributes.id, _method='GET',
                       **kwargs)
         schema = self.response_schema(strict=True)

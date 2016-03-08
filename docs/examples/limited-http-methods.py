@@ -17,6 +17,10 @@ INSTANCES = []
 User = namedtuple('User', ('id', 'etag', 'name'))
 
 
+# Instantiate our FlumpBlueprint ready for hooking up to our Flask app.
+blueprint = FlumpBlueprint('flump-example', __name__)
+
+
 class UserSchema(Schema):
     name = fields.Str(required=True)
 
@@ -24,7 +28,11 @@ class UserSchema(Schema):
 # Our FlumpView, as we are only supporing GET and POST, we don't need to
 # implement the `delete_entity` method. We also only inherit from the
 # BaseFlumpView class, and mixin the `Get`, `GetMany` and `Post` methods.
+@blueprint.flump_view('/user/')
 class UserView(GetMany, GetSingle, Post, BaseFlumpView):
+    SCHEMA = UserSchema
+    RESOURCE_NAME = 'user'
+
     def get_entity(self, entity_id):
         try:
             _id = int(entity_id)
@@ -45,10 +53,6 @@ class UserView(GetMany, GetSingle, Post, BaseFlumpView):
         INSTANCES.append(entity)
         return entity
 
-
-# Instantiate our FlumpBlueprint ready for hooking up to our Flask app.
-blueprint = FlumpBlueprint('flump-example', __name__)
-blueprint.register_flump_view(UserView(UserSchema, 'user', '/user/'))
 
 # Create our app and register our Blueprint
 app = Flask(__name__)
