@@ -14,6 +14,10 @@ INSTANCES = []
 User = namedtuple('User', ('id', 'etag', 'name', 'age'))
 
 
+# Instantiate our FlumpBlueprint ready for hooking up to our Flask app.
+blueprint = FlumpBlueprint('flump-example', __name__)
+
+
 # Our Schema, we make the name field `Immutable`, so we cannot update it
 # with a PATCH request.
 class UserSchema(Schema):
@@ -22,7 +26,11 @@ class UserSchema(Schema):
 
 
 # Our FlumpView, with the necessary methods implemented.
+@blueprint.flump_view('/user/')
 class UserView(FlumpView):
+    SCHEMA = UserSchema
+    RESOURCE_NAME = 'user'
+
     def get_entity(self, entity_id):
         try:
             _id = int(entity_id)
@@ -52,9 +60,6 @@ class UserView(FlumpView):
         return entity._replace(**data)
 
 
-# Instantiate our FlumpBlueprint ready for hooking up to our Flask app.
-blueprint = FlumpBlueprint('flump-example', __name__)
-blueprint.register_flump_view(UserView(UserSchema, 'user', '/user/'))
 
 # Create our app and register our Blueprint
 app = Flask(__name__)

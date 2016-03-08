@@ -72,3 +72,6 @@ target/
 
 # pyenv local version file.
 .python-version
+
+# Emacs dir locals.
+.dir-locals.el

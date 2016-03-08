@@ -42,7 +42,7 @@ class PageSizePagination:
         args = self.get_pagination_args()
         total_entities = self.get_total_entities(**kwargs)
 
-        parsed_url = urlparse(url_for('.{}'.format(self.resource_name),
+        parsed_url = urlparse(url_for('.{}'.format(self.RESOURCE_NAME),
                                       _external=True, _method='GET', **kwargs))
 
         def make_url(page):

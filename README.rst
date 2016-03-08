@@ -1,8 +1,11 @@
 Flump is a database agnostic api builder which depends on `Flask`_ and
 `Marshmallow`_.
 
-Flump tries to be as flexible as possible, giving no strong opinions/implementations
-for many common API features, such as; pagination, filtering, ordering, authentication etc... Instead Flump provides easily mixed in classes which also provide a common interface for extending itself to your needs.
+Flump tries to be as flexible as possible, giving no strong
+opinions/implementations for many common API features, such as; pagination,
+filtering, ordering, authentication etc... Instead Flump provides easily mixed
+in classes which also provide a common interface for extending itself to your
+needs.
 
 Marshmallow is used to provide the Schemas against which data is
 validated and returned.
@@ -11,20 +14,33 @@ validated and returned.
 Getting Started
 ----------------
 
+Registering The Blueprint
+===============
+
+All the endpoints of a flump API live on a ``FlumpBlueprint``. This acts much
+like a normal ``flask.Blueprint``, but provides some flump specific
+functionality.
+
+.. code-block:: python
+
+    blueprint = FlumpBlueprint('flump', __name__)
+
+
 The Schema
 ============
 
-You must define schemas describing your entities. These schemas should
-inherit from ``marshmallow.Schema``.
+You must define schemas describing your entities. These schemas should inherit
+from ``marshmallow.Schema``.
 
-All entities used in Flump must have a field called `etag`, this should be a field
-which auto updates when modified, and is used for concurrency control. For more information see :ref:`etags-design`.
+All entities used in Flump must have a field called `etag`, this should be a
+field which auto updates when modified, and is used for concurrency control. For
+more information see :ref:`etags-design`.
 
 When creating an entity they should also be provided with a unique identifier in
 a field called `id`. For more information see :ref:`ids-design`.
 
-For example when using Flask-SqlAlchemy ORM models you might define
-something like:
+For example when using Flask-SqlAlchemy ORM models you might define something
+like:
 
 .. code-block:: python
 
@@ -68,11 +84,17 @@ methods:
 
 * ``create_entity``, which should create an entity and persist it in your chosen data store, then return the entity.
 
+The View should also define ``RESOURCE_NAME`` and ``SCHEMA`` properties.
+
 .. code-block:: python
 
     from flump import FlumpView
 
+    @blueprint.flump_view('/user/')
     class UserView(FlumpView):
+        RESOURCE_NAME = 'user'
+        SCHEMA = UserSchema
+
         def get_many_entities(self):
             return User.query.all()
 
@@ -98,20 +120,12 @@ methods:
             db.session.flush()
             return model
 
-
-The Blueprint
+Registering The Blueprint
 ===============
 
-To hook this into Flask you should first create a FlumpBlueprint.
-
-.. code-block:: python
-
-    blueprint = FlumpBlueprint(
-        'flump', __name__,
-    )
-    blueprint.register_flump_view(UserView(UserSchema, 'user', '/user/'))
-
-`FlumpBlueprint` acts like a normal Flask Blueprint, so you can register `before_request`, `after_request` & `teardown_request` handlers as usual.  For example with SQLAlchemy we either want to ``commit`` or ``rollback`` any changes
+`FlumpBlueprint` acts like a normal Flask Blueprint, so you can register
+`before_request`, `after_request` & `teardown_request` handlers as usual. For
+example with SQLAlchemy we either want to ``commit`` or ``rollback`` any changes
 which have been made, depending on whether there has been an exception:
 
 .. code-block:: python

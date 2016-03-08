@@ -15,9 +15,9 @@ class Patch:
         """
         fields = request.json['data']['attributes'].keys()
         return make_entity_schema(
-            self.resource_schema, self.resource_name,
+            self.SCHEMA, self.RESOURCE_NAME,
             make_data_schema(
-                self.resource_schema, id_required=True,
+                self.SCHEMA, id_required=True,
                 only=fields, partial=True
             )
         )

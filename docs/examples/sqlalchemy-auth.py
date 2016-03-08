@@ -56,7 +56,11 @@ class UserSchema(Schema):
 
 
 # Define our FlumpView class with the necessary methods overridden.
+@blueprint.flump_view('/user/')
 class UserView(FlumpView):
+    SCHEMA = UserSchema
+    RESOURCE_NAME = 'user'
+
     def get_many_entities(self):
         return User.query.all()
 
@@ -86,11 +90,6 @@ class UserView(FlumpView):
         # can therefore return the ID.
         db.session.flush()
         return model
-
-
-# Instantiate our FlumpBlueprint ready for hooking up to our Flask app.
-blueprint = FlumpBlueprint('flump-example', __name__)
-blueprint.register_flump_view(UserView(UserSchema, 'user', '/user/'))
 
 
 # Define some request teardown, this is necessary to either commit, or rollback
