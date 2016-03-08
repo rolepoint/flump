@@ -55,3 +55,8 @@ class TestImmutable:
             },
             'links': {'self': 'http://localhost/tester/user/1'}
         }
+
+    def test_can_print_immutable(self):
+        # A wierd test to have, but I was getting exceptions messing about
+        # with things from the repl.
+        print(Immutable())

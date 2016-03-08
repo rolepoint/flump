@@ -10,6 +10,10 @@ class Immutable(Validator):
     request.
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.error = None
+
     def __call__(self, value):
         if request.method == 'PATCH':
             raise ValidationError("Can't update immutable fields.")
