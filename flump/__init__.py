@@ -20,7 +20,7 @@ from .error_handlers import register_error_handlers
 from .view import FlumpView
 
 __all__ = ['FlumpView', 'FlumpBlueprint']
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 
 MIMETYPE = 'application/vnd.api+json'

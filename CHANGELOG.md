@@ -1,3 +1,11 @@
+# v0.7.0 (08/03/15)
+
+Note: This is a breaking change, but as we haven't released yet we aren't
+bumping the major version.
+
+- Heavily refactor the API.  See README & documentation for the new API.
+- Trying to print an Immutable validator will no longer except (#14).
+
 # v0.6.0 (15/02/15)
 
 Note: This is a breaking change, but as we haven't released yet we aren't bumping the major version.
