@@ -1,3 +1,7 @@
+# v0.7.1 (01/04/15)
+
+- Increase default max_page_size to 100, because 20 is unreasonably small.
+
 # v0.7.0 (08/03/15)
 
 Note: This is a breaking change, but as we haven't released yet we aren't
