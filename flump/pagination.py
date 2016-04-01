@@ -15,7 +15,7 @@ class PageSizePagination:
     Mixin class which provides methods for Number/Size based pagination.
     """
     DEFAULT_PAGE_SIZE = 10
-    MAX_PAGE_SIZE = 20
+    MAX_PAGE_SIZE = 100
 
     def get_pagination_args(self):
         """
