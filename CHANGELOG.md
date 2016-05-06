@@ -1,3 +1,7 @@
+# v0.7.4 (06/05/16)
+
+- Fix issue with previosu release change being reverted
+
 # v0.7.3 (06/05/16)
 
 - Don't try and parse JSON in default logger.
