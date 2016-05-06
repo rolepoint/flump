@@ -1,8 +1,12 @@
-# v0.7.1 (01/04/15)
+# v0.7.2 (06/05/16)
+
+- Ensure `application/vnd.api+json` mimetype works for POST/PATCH requests. Also allow `application/json` mimetype, and no specified mimetype.
+
+# v0.7.1 (01/04/16)
 
 - Increase default max_page_size to 100, because 20 is unreasonably small.
 
-# v0.7.0 (08/03/15)
+# v0.7.0 (08/03/16)
 
 Note: This is a breaking change, but as we haven't released yet we aren't
 bumping the major version.
@@ -10,7 +14,7 @@ bumping the major version.
 - Heavily refactor the API.  See README & documentation for the new API.
 - Trying to print an Immutable validator will no longer except (#14).
 
-# v0.6.0 (15/02/15)
+# v0.6.0 (15/02/16)
 
 Note: This is a breaking change, but as we haven't released yet we aren't bumping the major version.
 
