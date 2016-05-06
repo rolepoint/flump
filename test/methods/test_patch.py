@@ -18,6 +18,17 @@ def test_patch(flask_client):
     }
 
 
+def test_patch_works_with_json_mimetype(flask_client):
+    mimetype = 'application/json'
+    create_response = create_user(flask_client, mimetype=mimetype)
+    response = patch_user(
+        flask_client, create_response.json['data']['id'],
+        etag=create_response.headers['Etag'], mimetype=mimetype
+    )
+
+    assert response.status_code == 200
+
+
 def test_patch_updates_only_specified_field(flask_client):
     create_response = create_user(flask_client)
     _id = create_response.json['data']['id']
@@ -89,3 +100,13 @@ def test_patch_fails_with_wrong_id(flask_client):
     response = patch_user(flask_client, 'notanidlol', etag='wrong-etag')
 
     assert response.status_code == 404
+
+
+def test_patch_fails_with_bad_content_type(flask_client):
+    create_response = create_user(flask_client)
+    response = patch_user(
+        flask_client, create_response.json['data']['id'],
+        etag=create_response.headers['Etag'], mimetype='bad_mimetype'
+    )
+
+    assert response.status_code == 415

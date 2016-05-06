@@ -1,15 +1,16 @@
 import json
 
+from flump import MIMETYPE
 from flump.web_utils import url_for
 
 
-def create_user(test_client, data=None):
+def create_user(test_client, data=None, mimetype=MIMETYPE):
     data = data or {
         'data': {'type': 'user', 'attributes': {'name': 'Carl', 'age': 26}}
     }
     return test_client.post(
         url_for('flump.user', _method='POST'), data=json.dumps(data),
-        headers=[('Content-Type', 'application/json')]
+        headers=[('Content-Type', mimetype)]
     )
 
 
@@ -31,9 +32,9 @@ def delete_user(test_client, entity_id, etag=None):
     return test_client.delete(url, headers=headers)
 
 
-def patch_user(test_client, entity_id, data=None, etag=None):
+def patch_user(test_client, entity_id, data=None, etag=None, mimetype=MIMETYPE):
     url = url_for('flump.user', entity_id=entity_id, _method='PATCH')
-    headers = [('Content-Type', 'application/json')]
+    headers = [('Content-Type', mimetype)]
     if etag:
         headers.append(('If-Match', etag))
 

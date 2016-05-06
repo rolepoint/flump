@@ -20,6 +20,11 @@ def test_post(flask_client):
     assert response.headers['Etag']
 
 
+def test_post_works_with_json_mimetype(flask_client):
+    response = create_user(flask_client, mimetype='application/json')
+    assert response.status_code == 201
+
+
 def test_post_fails_if_data_is_incorrect(flask_client):
     # data is missing a top-level 'data' key.
     data = {'type': 'user', 'attributes': {'name': 'Carl', 'age': 26}}
@@ -58,3 +63,8 @@ def test_post_fails_if_wrong_resource_type_specified(flask_client):
     }
     response = create_user(flask_client, data=data)
     assert response.status_code == 409
+
+
+def test_post_fails_if_wrong_content_type_used(flask_client):
+    response = create_user(flask_client, mimetype='bad_mimetype')
+    assert response.status_code == 415
