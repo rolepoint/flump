@@ -18,10 +18,10 @@ from flask import Blueprint, request
 from .base_view import _FlumpMethodView
 from .error_handlers import register_error_handlers
 from .view import FlumpView
-from .web_utils import MIMETYPE
+from .web_utils import get_json, MIMETYPE
 
 __all__ = ['FlumpView', 'FlumpBlueprint']
-__version__ = "0.7.2"
+__version__ = "0.7.3"
 
 
 class FlumpBlueprint(Blueprint):
@@ -47,10 +47,12 @@ class FlumpBlueprint(Blueprint):
 
             debug_string = (
                 "%s request made for resource type %s with kwargs: %s "
-                "and data: %s"
+                "and json: %s"
             )
+
             logger.debug(
-                debug_string, request.method, request.view_args, request.data
+                debug_string, request.method, request.view_args,
+                get_json() if request.method in ('PATCH', 'POST') else ''
             )
 
         @self.after_request

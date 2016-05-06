@@ -1,3 +1,7 @@
+# v0.7.3 (06/05/16)
+
+- Don't try and parse JSON in default logger.
+
 # v0.7.2 (06/05/16)
 
 - Ensure `application/vnd.api+json` mimetype works for POST/PATCH requests. Also allow `application/json` mimetype, and no specified mimetype.
