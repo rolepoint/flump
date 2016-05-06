@@ -18,12 +18,10 @@ from flask import Blueprint, request
 from .base_view import _FlumpMethodView
 from .error_handlers import register_error_handlers
 from .view import FlumpView
+from .web_utils import get_json, MIMETYPE
 
 __all__ = ['FlumpView', 'FlumpBlueprint']
 __version__ = "0.7.1"
-
-
-MIMETYPE = 'application/vnd.api+json'
 
 
 class FlumpBlueprint(Blueprint):
@@ -51,8 +49,11 @@ class FlumpBlueprint(Blueprint):
                 "%s request made for resource type %s with kwargs: %s "
                 "and json: %s"
             )
-            logger.debug(debug_string, request.method, request.view_args,
-                         request.json)
+
+            logger.debug(
+                debug_string, request.method, request.view_args,
+                get_json() if request.method in ('PATCH', 'POST') else ''
+            )
 
         @self.after_request
         def add_mimetype(response):
