@@ -72,9 +72,11 @@ class FlumpBlueprint(Blueprint):
 
         self.add_url_rule(url, methods=('GET',), view_func=view_func)
         self.add_url_rule(url, view_func=view_func, methods=('POST',))
-        self.add_url_rule('{}<entity_id>'.format(url),
-                          view_func=view_func,
-                          methods=('GET', 'PATCH', 'DELETE'))
+        self.add_url_rule(
+            '{}{}<entity_id>'.format(url, '' if url[-1] == '/' else '/'),
+            view_func=view_func,
+            methods=('GET', 'PATCH', 'DELETE')
+        )
 
     def flump_view(self, url):
         """
