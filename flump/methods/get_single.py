@@ -2,7 +2,7 @@ from flask import request, jsonify
 
 from werkzeug.exceptions import NotFound
 
-from ..schemas import EntityData, ResponseData
+from ..schemas import EntityData, ResponseData, EntityMetaData
 
 
 class GetSingle:
@@ -28,7 +28,8 @@ class GetSingle:
         if self._etag_matches(entity):
             return '', 304
 
-        entity_data = EntityData(entity.id, self.RESOURCE_NAME, entity)
+        entity_data = EntityData(entity.id, self.RESOURCE_NAME,
+                                 entity, EntityMetaData(entity.etag))
         response_data, _ = self.response_schema(strict=True).dump(
             ResponseData(entity_data, {'self': request.url})
         )
