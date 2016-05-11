@@ -1,6 +1,11 @@
+# v0.7.5 (11/05/16)
+
+- Handle endpoints without trailing slashes better.
+- Add a default BadRequest handler.
+
 # v0.7.4 (06/05/16)
 
-- Fix issue with previosu release change being reverted
+- Fix issue with previous release change being reverted
 
 # v0.7.3 (06/05/16)
 

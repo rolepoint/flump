@@ -21,7 +21,7 @@ from .view import FlumpView
 from .web_utils import MIMETYPE
 
 __all__ = ['FlumpView', 'FlumpBlueprint']
-__version__ = "0.7.4"
+__version__ = "0.7.5"
 
 
 class FlumpBlueprint(Blueprint):

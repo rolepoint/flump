@@ -6,7 +6,7 @@ REQUIREMENTS = ['marshmallow', 'flask']
 
 setup(
     name='flump',
-    version='0.7.4',
+    version='0.7.5',
     description='REST API builder using Flask routing and Marshmallow schemas.',
     author='Carl Henderson',
     author_email='carl.s.henderson@gmail.com',
