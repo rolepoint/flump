@@ -76,7 +76,7 @@ class TestGetManyWithPagination:
 
         assert response.status_code == 200
         assert response.json == {
-            'meta': {'total_count': 3},
+            'meta': {'total_count': 3, 'extra': {'size': 2, 'page': 1}},
             'data': [
                 {
                     'attributes': {'name': 'Carl', 'age': 26},
@@ -100,7 +100,7 @@ class TestGetManyWithPagination:
 
         assert response.status_code == 200
         assert response.json == {
-            'meta': {'total_count': 3},
+            'meta': {'total_count': 3, 'extra': {'size': 2, 'page': 2}},
             'data': [
                 {
                     'attributes': {'name': 'Carl', 'age': 26},
@@ -129,7 +129,7 @@ class TestGetManyWithPagination:
 
         assert response.status_code == 200
         assert response.json == {
-            'meta': {'total_count': 10},
+            'meta': {'total_count': 10, 'extra': {'size': 3, 'page': 2}},
             'data': [
                 {
                     'attributes': {'name': 'Carl', 'age': 26},

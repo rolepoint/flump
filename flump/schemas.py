@@ -82,6 +82,10 @@ def make_response_schema(resource_schema, only=None, many=False):
 
     class MetaSchema(Schema):
         total_count = fields.Integer()
+        # This may contain extra data depending on the context. For instance
+        # the PageSizePagination mixin makes use of this field to include the
+        # current page and size in the response.
+        extra = fields.Dict()
 
     class JsonApiResponseSchema(Schema):
         data = fields.Nested(data_schema, many=many)
