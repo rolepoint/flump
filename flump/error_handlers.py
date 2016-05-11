@@ -2,12 +2,16 @@ from flask import jsonify
 from werkzeug.exceptions import (Unauthorized, NotFound, Conflict,
                                  PreconditionFailed, Forbidden,
                                  NotImplemented, UnsupportedMediaType,
-                                 PreconditionRequired)
+                                 PreconditionRequired, BadRequest)
 
 from .exceptions import FlumpUnprocessableEntity
 
 
 def register_error_handlers(blueprint):
+    @blueprint.errorhandler(BadRequest)
+    @blueprint.errorhandler(400)
+    def bad_request(e):
+        return jsonify(message=str(e.description)), 400
 
     @blueprint.errorhandler(Unauthorized)
     @blueprint.errorhandler(401)
