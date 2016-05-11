@@ -1,4 +1,5 @@
 from flump.web_utils import url_for
+from mock import ANY
 
 from ..helpers import create_user
 
@@ -9,7 +10,7 @@ def test_post(flask_client):
     assert response.json == {
         'data': {
             'attributes': {'name': 'Carl', 'age': 26},
-            'type': 'user', 'id': '1'
+            'type': 'user', 'id': '1', 'meta': {'etag': ANY}
         },
         'links': {'self': 'http://localhost/tester/user/1'}
     }

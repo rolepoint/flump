@@ -3,7 +3,9 @@ from werkzeug.exceptions import Forbidden
 
 
 from ..exceptions import FlumpUnprocessableEntity
-from ..schemas import ResponseData, make_entity_schema, make_data_schema
+from ..schemas import (
+    ResponseData, make_entity_schema, make_data_schema, EntityMetaData
+)
 from ..web_utils import url_for, get_json
 
 
@@ -62,10 +64,15 @@ class Post:
                       entity_id=entity_data.attributes.id, _method='GET',
                       **kwargs)
         schema = self.response_schema(strict=True)
-        response_data = ResponseData(entity_data, {'self': url})
+
+        etag = entity_data.attributes.etag
+        response_data = ResponseData(
+            entity_data._replace(meta=EntityMetaData(etag)),
+            {'self': url}
+        )
         data, _ = schema.dump(response_data)
 
         response = jsonify(data)
         response.headers['Location'] = url
-        response.set_etag(str(entity_data.attributes.etag))
+        response.set_etag(str(etag))
         return response, 201

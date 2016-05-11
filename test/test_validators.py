@@ -1,4 +1,5 @@
 from marshmallow import fields
+from mock import ANY
 import pytest
 
 from flump.validators import Immutable
@@ -51,7 +52,8 @@ class TestImmutable:
             'data': {
                 'attributes': {'age': 99, 'name': 'Carl'},
                 'id': '1',
-                'type': 'user'
+                'type': 'user',
+                'meta': {'etag': ANY}
             },
             'links': {'self': 'http://localhost/tester/user/1'}
         }

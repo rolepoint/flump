@@ -2,7 +2,9 @@ from flask import request, jsonify
 from werkzeug.exceptions import NotFound
 
 from ..exceptions import FlumpUnprocessableEntity
-from ..schemas import ResponseData, make_entity_schema, make_data_schema
+from ..schemas import (
+    ResponseData, make_entity_schema, make_data_schema, EntityMetaData
+)
 from ..web_utils import get_json
 
 
@@ -65,9 +67,9 @@ class Patch:
             raise FlumpUnprocessableEntity(errors=errors)
 
         entity = self.update_entity(entity, entity_data.attributes)
-
-        response_data = ResponseData(entity_data._replace(attributes=entity),
-                                     {'self': request.url})
+        entity_data = entity_data._replace(attributes=entity,
+                                           meta=EntityMetaData(entity.etag))
+        response_data = ResponseData(entity_data, {'self': request.url})
 
         data, _ = self.response_schema(strict=True).dump(response_data)
         response = jsonify(data)

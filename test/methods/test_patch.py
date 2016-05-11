@@ -1,3 +1,5 @@
+from mock import ANY
+
 from ..helpers import create_user, patch_user
 
 
@@ -12,7 +14,7 @@ def test_patch(flask_client):
     assert response.json == {
         'data': {
             'attributes': {'name': 'Carly', 'age': 27},
-            'id': '1', 'type': 'user'
+            'id': '1', 'type': 'user', 'meta': {'etag': ANY}
         },
         'links': {'self': 'http://localhost/tester/user/1'}
     }
@@ -44,7 +46,7 @@ def test_patch_updates_only_specified_field(flask_client):
     assert response.json == {
         'data': {
             'attributes': {'name': 'Carly', 'age': 26},
-            'id': '1', 'type': 'user'
+            'id': '1', 'type': 'user', 'meta': {'etag': ANY}
         },
         'links': {'self': 'http://localhost/tester/user/1'}
     }
@@ -72,7 +74,7 @@ def test_patch_works_with_wildcard_etag(flask_client):
     assert response.json == {
         'data': {
             'attributes': {'name': 'Carly', 'age': 27},
-            'id': '1', 'type': 'user'
+            'id': '1', 'type': 'user', 'meta': {'etag': ANY}
         },
         'links': {'self': 'http://localhost/tester/user/1'}
     }

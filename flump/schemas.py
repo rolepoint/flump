@@ -6,11 +6,17 @@ from werkzeug.exceptions import Conflict
 from .exceptions import FlumpUnprocessableEntity
 
 
-EntityData = namedtuple('EntityData', ('id', 'type', 'attributes'))
+EntityData = namedtuple('EntityData', ('id', 'type', 'attributes', 'meta'))
 
 ResponseData = namedtuple('ResponseData', ('data', 'links'))
 
+EntityMetaData = namedtuple('EntityMetaData', ('etag'))
+
 ManyResponseData = namedtuple('ManyResponseData', ('data', 'links', 'meta'))
+
+
+class EntityMetaSchema(Schema):
+    etag = fields.Str(dump_only=True)
 
 
 def make_data_schema(
@@ -37,6 +43,7 @@ def make_data_schema(
         type = fields.Str(required=True)
         attributes = fields.Nested(resource_schema,
                                    required=True, only=only, partial=partial)
+        meta = fields.Nested(EntityMetaSchema, dump_only=True)
 
         @post_load
         def to_entity_data(self, data):
@@ -45,7 +52,8 @@ def make_data_schema(
             namedtuple format. When loading we do not have an ID so this
             will be None.
             """
-            return EntityData(data.get('id'), data['type'], data['attributes'])
+            return EntityData(data.get('id'), data['type'],
+                              data['attributes'], None)
 
         @pre_dump
         def add_id_to_schema(self, entity_data):

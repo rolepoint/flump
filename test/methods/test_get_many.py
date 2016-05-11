@@ -1,3 +1,4 @@
+from mock import ANY
 import pytest
 
 from flump.web_utils import url_for
@@ -20,15 +21,15 @@ class TestGetManyDefault:
             'data': [
                 {
                     'attributes': {'name': 'Carl', 'age': 26},
-                    'id': '1', 'type': 'user'
+                    'id': '1', 'type': 'user', 'meta': {'etag': ANY}
                 },
                 {
                     'attributes': {'name': 'Carl', 'age': 26},
-                    'id': '2', 'type': 'user'
+                    'id': '2', 'type': 'user', 'meta': {'etag': ANY}
                 },
                 {
                     'attributes': {'name': 'Carl', 'age': 26},
-                    'id': '3', 'type': 'user'
+                    'id': '3', 'type': 'user', 'meta': {'etag': ANY}
                 }
             ],
             'links': {'self': 'http://localhost/tester/user/'}
@@ -80,11 +81,11 @@ class TestGetManyWithPagination:
             'data': [
                 {
                     'attributes': {'name': 'Carl', 'age': 26},
-                    'id': '1', 'type': 'user'
+                    'id': '1', 'type': 'user', 'meta': {'etag': ANY}
                 },
                 {
                     'attributes': {'name': 'Carl', 'age': 26},
-                    'id': '2', 'type': 'user'
+                    'id': '2', 'type': 'user', 'meta': {'etag': ANY}
                 }
             ],
             'links': {
@@ -104,7 +105,7 @@ class TestGetManyWithPagination:
             'data': [
                 {
                     'attributes': {'name': 'Carl', 'age': 26},
-                    'id': '3', 'type': 'user'
+                    'id': '3', 'type': 'user', 'meta': {'etag': ANY}
                 }
             ],
             'links': {
@@ -133,15 +134,15 @@ class TestGetManyWithPagination:
             'data': [
                 {
                     'attributes': {'name': 'Carl', 'age': 26},
-                    'id': '4', 'type': 'user'
+                    'id': '4', 'type': 'user', 'meta': {'etag': ANY}
                 },
                 {
                     'attributes': {'name': 'Carl', 'age': 26},
-                    'id': '5', 'type': 'user'
+                    'id': '5', 'type': 'user', 'meta': {'etag': ANY}
                 },
                 {
                     'attributes': {'name': 'Carl', 'age': 26},
-                    'id': '6', 'type': 'user'
+                    'id': '6', 'type': 'user', 'meta': {'etag': ANY}
                 }
             ],
             'links': {

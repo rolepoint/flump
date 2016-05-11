@@ -1,3 +1,5 @@
+from mock import ANY
+
 from ..helpers import create_user, get_user
 
 
@@ -8,7 +10,7 @@ def test_get(flask_client):
     assert response.json == {
         'data': {
             'attributes': {'name': 'Carl', 'age': 26},
-            'id': '1', 'type': 'user'
+            'id': '1', 'type': 'user', 'meta': {'etag': ANY}
         },
         'links': {'self': 'http://localhost/tester/user/1'}
     }
