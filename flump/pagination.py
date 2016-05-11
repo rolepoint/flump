@@ -65,6 +65,13 @@ class PageSizePagination:
         """
         Returns a `schemas.ManyResponseData` with the links replaced with
         those returned by `get_pagination_links`.
+
+        Also adds the `max_results` and `page` args to the meta.
         """
         response = super()._make_get_many_response(entity_data, **kwargs)
-        return response._replace(links=self.get_pagination_links(**kwargs))
+        response = response._replace(links=self.get_pagination_links(**kwargs))
+        pagination_args = self.get_pagination_args()
+        meta = response.meta
+        meta['extra'] = {'size': pagination_args.size,
+                         'page': pagination_args.page}
+        return response._replace(meta=meta)
