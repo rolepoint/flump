@@ -1,3 +1,8 @@
+# v0.7.6 (11/05/16)
+
+- Include etags as part of entity `meta` section.
+- Add current page and size to response `meta` section for paginated responses.
+
 # v0.7.5 (11/05/16)
 
 - Handle endpoints without trailing slashes better.
