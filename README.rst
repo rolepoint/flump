@@ -1,6 +1,8 @@
 Flump is a database agnostic api builder which depends on `Flask`_ and
 `Marshmallow`_.
 
+To get started, check out http://flump.readthedocs.io/!
+
 Flump tries to be as flexible as possible, giving no strong
 opinions/implementations for many common API features, such as; pagination,
 filtering, ordering, authentication etc... Instead Flump provides easily mixed
