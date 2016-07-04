@@ -32,7 +32,7 @@ class TestGetManyDefault:
                     'id': '3', 'type': 'user', 'meta': {'etag': ANY}
                 }
             ],
-            'links': {'self': 'http://localhost/tester/user/'}
+            'links': {'self': 'http://localhost/tester/user'}
         }
 
     def test_get_when_none_exist(self, flask_client):
@@ -42,7 +42,7 @@ class TestGetManyDefault:
         assert response.json == {
             'meta': {'total_count': 0},
             'data': [],
-            'links': {'self': 'http://localhost/tester/user/'}
+            'links': {'self': 'http://localhost/tester/user'}
         }
 
 
@@ -73,7 +73,7 @@ class TestGetManyWithPagination:
 
         response = flask_client.get(url_for('flump.user', _method='GET'))
 
-        base_url = 'http://localhost/tester/user/'
+        base_url = 'http://localhost/tester/user'
 
         assert response.status_code == 200
         assert response.json == {
@@ -126,7 +126,7 @@ class TestGetManyWithPagination:
             query_string='page[number]=2&page[size]=3'
         )
 
-        base_url = 'http://localhost/tester/user/'
+        base_url = 'http://localhost/tester/user'
 
         assert response.status_code == 200
         assert response.json == {

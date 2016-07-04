@@ -19,7 +19,7 @@ def test_flump_blueprint():
     app.register_blueprint(blueprint)
 
     rules = [i.rule for i in app.url_map._rules_by_endpoint['test_flump.blah']]
-    assert rules == ['/endpoint/', '/endpoint/', '/endpoint/<entity_id>']
+    assert rules == ['/endpoint', '/endpoint', '/endpoint/<entity_id>']
 
 
 def test_flump_view_decorator():
@@ -34,7 +34,7 @@ def test_flump_view_decorator():
 
     # Assert that 3 routes have been defined.
     rules = [i.rule for i in app.url_map._rules_by_endpoint['test_flump.blah']]
-    assert rules == ['/endpoint/', '/endpoint/', '/endpoint/<entity_id>']
+    assert rules == ['/endpoint', '/endpoint', '/endpoint/<entity_id>']
 
 
 def test_adds_trailing_slash_to_id_specific_route_if_left_off():

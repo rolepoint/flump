@@ -1,3 +1,5 @@
+import json
+
 from flump.web_utils import url_for
 from mock import ANY
 
@@ -66,6 +68,21 @@ def test_post_fails_if_wrong_resource_type_specified(flask_client):
     assert response.status_code == 409
 
 
+
 def test_post_fails_if_wrong_content_type_used(flask_client):
     response = create_user(flask_client, mimetype='bad_mimetype')
     assert response.status_code == 415
+
+
+def test_no_redirect_with_trailing_slash(flask_client):
+    data = {
+        'data': {'type': 'user', 'attributes': {'name': 'Carl', 'age': 26}}
+    }
+    url = url_for('flump.user', _method='POST')
+    assert url[-1] != '/'
+    url = url + '/'
+    response = flask_client.post(
+        url, data=json.dumps(data),
+        headers=[('Content-Type', 'application/json')]
+    )
+    assert response.status_code == 201

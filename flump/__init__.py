@@ -70,13 +70,15 @@ class FlumpBlueprint(Blueprint):
         view_func = _FlumpMethodView.as_view(flump_view.RESOURCE_NAME,
                                              flump_view=flump_view)
 
-        self.add_url_rule(url, methods=('GET',), view_func=view_func)
-        self.add_url_rule(url, view_func=view_func, methods=('POST',))
-        self.add_url_rule(
-            '{}{}<entity_id>'.format(url, '' if url[-1] == '/' else '/'),
-            view_func=view_func,
-            methods=('GET', 'PATCH', 'DELETE')
-        )
+        # Our canonical URLs do not have a trailing slash.
+        # Though we use `strict_slashes=False` to make sure the route matches
+        # on both anyway.
+        url = url.rstrip('/')
+
+        self.add_url_rule(url, methods=('GET',), view_func=view_func, strict_slashes=False)
+        self.add_url_rule(url, view_func=view_func, methods=('POST',), strict_slashes=False)
+        self.add_url_rule('{}/<entity_id>'.format(url), view_func=view_func,
+                          methods=('GET', 'PATCH', 'DELETE'))
 
     def flump_view(self, url):
         """
