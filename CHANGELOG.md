@@ -1,3 +1,9 @@
+# v0.7.7 (04/05/16)
+
+- Stopped redirecting to "canonical" URLs if an expected trailing slash was
+  missing.  URLs should now be matched regardless of whether they have a
+  trailing slash or not.
+
 # v0.7.6 (11/05/16)
 
 - Include etags as part of entity `meta` section.
