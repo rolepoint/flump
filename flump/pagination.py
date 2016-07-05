@@ -44,11 +44,17 @@ class PageSizePagination:
 
         parsed_url = urlparse(url_for('.{}'.format(self.RESOURCE_NAME),
                                       _external=True, _method='GET', **kwargs))
+        other_query_params = [
+            (k, v) for (k, v) in request.args.items()
+            if k not in ('page[number]', 'page[size]')
+        ]
 
         def make_url(page):
             if not total_entities:
                 return None
-            params = (('page[number]', page), ('page[size]', args.size))
+            params = other_query_params + [
+                ('page[number]', page), ('page[size]', args.size)
+            ]
             return parsed_url._replace(query=urlencode(params)).geturl()
 
         num_pages = int(ceil(total_entities / float(args.size)))
