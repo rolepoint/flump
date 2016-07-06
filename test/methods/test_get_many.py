@@ -123,7 +123,7 @@ class TestGetManyWithPagination:
 
         response = flask_client.get(
             url_for('flump.user', _method='GET'),
-            query_string='page[number]=2&page[size]=3'
+            query_string='other_param=test&page[number]=2&page[size]=3'
         )
 
         base_url = 'http://localhost/tester/user'
@@ -146,10 +146,10 @@ class TestGetManyWithPagination:
                 }
             ],
             'links': {
-                'self': base_url + '?page[number]=2&page[size]=3',
-                'first': base_url + '?page%5Bnumber%5D=1&page%5Bsize%5D=3',
-                'last': base_url + '?page%5Bnumber%5D=4&page%5Bsize%5D=3',
-                'prev': base_url + '?page%5Bnumber%5D=1&page%5Bsize%5D=3',
-                'next': base_url + '?page%5Bnumber%5D=3&page%5Bsize%5D=3'
+                'self': base_url + '?other_param=test&page[number]=2&page[size]=3',
+                'first': base_url + '?other_param=test&page%5Bnumber%5D=1&page%5Bsize%5D=3',
+                'last': base_url + '?other_param=test&page%5Bnumber%5D=4&page%5Bsize%5D=3',
+                'prev': base_url + '?other_param=test&page%5Bnumber%5D=1&page%5Bsize%5D=3',
+                'next': base_url + '?other_param=test&page%5Bnumber%5D=3&page%5Bsize%5D=3'
             }
         }
