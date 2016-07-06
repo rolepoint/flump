@@ -1,4 +1,9 @@
-# v0.7.7 (04/05/16)
+# v0.7.8 (06/07/16)
+
+- Pagination links now keep any non-pagination query string parmaeters that
+  are in the current request.
+
+# v0.7.7 (04/07/16)
 
 - Stopped redirecting to "canonical" URLs if an expected trailing slash was
   missing.  URLs should now be matched regardless of whether they have a
