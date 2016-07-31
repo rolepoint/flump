@@ -11,7 +11,7 @@ class Immutable(Validator):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(Immutable, self).__init__(*args, **kwargs)
         self.error = None
 
     def __call__(self, value):

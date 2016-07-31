@@ -36,7 +36,7 @@ class FlumpBlueprint(Blueprint):
     Adds the 'application/vnd.api+json' Content-Type header to all responses.
     """
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(FlumpBlueprint, self).__init__(*args, **kwargs)
 
         register_error_handlers(self)
 

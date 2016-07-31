@@ -56,7 +56,6 @@ class TestGetManyWithPagination:
             DEFAULT_PAGE_SIZE = 2
 
             def get_many_entities(self, **kwargs):
-                nonlocal instances
                 pagination_args = self.get_pagination_args()
                 chunks = [
                     instances[i:i + pagination_args.size]

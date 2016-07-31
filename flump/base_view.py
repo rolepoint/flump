@@ -7,7 +7,7 @@ from werkzeug.exceptions import NotImplemented as WerkzeugNotImplemented
 from .schemas import make_data_schema, make_response_schema
 
 
-class BaseFlumpView:
+class BaseFlumpView(object):
     """
     A base view from which all views provided to `FlumpBlueprint` must
     inherit.

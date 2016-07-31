@@ -1,6 +1,10 @@
 from collections import namedtuple
 from math import ceil
-from urllib.parse import urlencode, urlparse
+try:
+    from urllib.parse import urlencode, urlparse
+except ImportError:
+    from urllib import urlencode
+    from urlparse import urlparse
 
 from flask import request
 
@@ -10,7 +14,7 @@ from .web_utils import url_for
 PaginationArgs = namedtuple('PaginationArgs', ('page', 'size'))
 
 
-class PageSizePagination:
+class PageSizePagination(object):
     """
     Mixin class which provides methods for Number/Size based pagination.
     """
@@ -74,7 +78,9 @@ class PageSizePagination:
 
         Also adds the `max_results` and `page` args to the meta.
         """
-        response = super()._make_get_many_response(entity_data, **kwargs)
+        response = super(PageSizePagination, self)._make_get_many_response(
+            entity_data, **kwargs
+        )
         response = response._replace(links=self.get_pagination_links(**kwargs))
         pagination_args = self.get_pagination_args()
         meta = response.meta
