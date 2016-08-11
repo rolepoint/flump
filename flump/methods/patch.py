@@ -62,16 +62,15 @@ class Patch:
             raise NotFound
         self._verify_etag(entity)
 
-        entity_data, errors = self._patch_schema().load(self.patch_data)
+        incoming_data, errors = self._patch_schema().load(self.patch_data)
         if errors:
             raise FlumpUnprocessableEntity(errors=errors)
 
-        entity = self.update_entity(entity, entity_data.attributes)
-        entity_data = entity_data._replace(attributes=entity,
-                                           meta=EntityMetaData(entity.etag))
+        entity = self.update_entity(entity, incoming_data.attributes)
+        entity_data = self._build_entity_data(entity)
         response_data = ResponseData(entity_data, {'self': request.url})
 
         data, _ = self.response_schema(strict=True).dump(response_data)
         response = jsonify(data)
-        response.set_etag(str(entity.etag))
+        response.set_etag(str(entity_data.meta.etag))
         return response, 200

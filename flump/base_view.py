@@ -4,7 +4,9 @@ from werkzeug.exceptions import PreconditionFailed, PreconditionRequired
 from werkzeug.exceptions import NotImplemented as WerkzeugNotImplemented
 
 
-from .schemas import make_data_schema, make_response_schema
+from .schemas import (
+    make_data_schema, make_response_schema, EntityData, EntityMetaData
+)
 
 
 class BaseFlumpView(object):
@@ -122,6 +124,14 @@ class BaseFlumpView(object):
         Returns a boolean indicating whether the etag is valid.
         """
         return any(i in request.if_match for i in (str(entity.etag), '*'))
+
+    def _build_entity_data(self, entity):
+        '''
+        Builds an EntityData struct for an entity.
+        '''
+        return EntityData(
+            entity.id, self.RESOURCE_NAME, entity, EntityMetaData(entity.etag)
+        )
 
 
 class _FlumpMethodView(MethodView):
