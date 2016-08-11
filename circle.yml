@@ -7,9 +7,6 @@ machine:
 
 ## Customize dependencies..
 dependencies:
-  pre:
-    - pip install -r dev-requirements.txt
-
-test:
   override:
-    - py.test test
+    - pip install tox tox-pyenv
+    - pyenv local 2.7.10 3.5.0

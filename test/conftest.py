@@ -24,7 +24,6 @@ def view_and_schema():
             age = fields.Integer(required=True)
 
         def get_entity(self, entity_id):
-            nonlocal instances
             try:
                 _id = int(entity_id)
             except ValueError:
@@ -34,19 +33,15 @@ def view_and_schema():
                 return instances[_id - 1]
 
         def get_total_entities(self, **kwargs):
-            nonlocal instances
             return len(instances)
 
         def get_many_entities(self, **kwargs):
-            nonlocal instances
             return instances
 
         def delete_entity(self, entity):
-            nonlocal instances
             instances.pop(int(entity.id) - 1)
 
         def create_entity(self, data):
-            nonlocal instances
             entity = User(str(len(instances) + 1), uuid.uuid4(),
                           data['name'], data['age'])
             instances.append(entity)
