@@ -10,7 +10,7 @@ setup(
     description='REST API builder using Flask routing and Marshmallow schemas.',
     author='Carl Henderson',
     author_email='carl.s.henderson@gmail.com',
-    packages=find_packages(exclude=['tests']),
+    packages=find_packages(exclude=['test']),
     install_requires=REQUIREMENTS,
     tests_require=['pytest'],
     zip_safe=False,
