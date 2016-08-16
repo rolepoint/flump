@@ -1,8 +1,6 @@
 from flask import jsonify, request
 
-from ..schemas import (
-    EntityData, make_response_schema, ManyResponseData, EntityMetaData
-)
+from ..schemas import make_response_schema, ManyResponseData
 
 
 class GetMany:
@@ -31,8 +29,7 @@ class GetMany:
                           entities to be returned.
         """
         entities = [
-            EntityData(i.id, self.RESOURCE_NAME, i, EntityMetaData(i.etag))
-            for i in self.get_many_entities(**kwargs)
+            self._build_entity_data(e) for e in self.get_many_entities(**kwargs)
         ]
         data = self._make_get_many_response(entities, **kwargs)
 

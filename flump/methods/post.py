@@ -47,32 +47,28 @@ class Post:
         :param \**kwargs: Any kwargs taken from the url which are used
                           for building the url identifying the new entity.
         """
-        entity_data, errors = self._post_schema().load(self.post_data)
+        incoming_data, errors = self._post_schema().load(self.post_data)
         if errors:
             raise FlumpUnprocessableEntity(errors=errors)
 
-        if entity_data.id is not None:
+        if incoming_data.id is not None:
             raise Forbidden(
                 'You must not specify an id when creating an entity'
             )
 
-        entity_data = entity_data._replace(
-            attributes=self.create_entity(entity_data.attributes)
-        )
+        new_model = self.create_entity(incoming_data.attributes)
+
+        entity_data = self._build_entity_data(new_model)
 
         url = url_for('.{}'.format(self.RESOURCE_NAME), _external=True,
-                      entity_id=entity_data.attributes.id, _method='GET',
+                      entity_id=entity_data.id, _method='GET',
                       **kwargs)
         schema = self.response_schema(strict=True)
 
-        etag = entity_data.attributes.etag
-        response_data = ResponseData(
-            entity_data._replace(meta=EntityMetaData(etag)),
-            {'self': url}
-        )
+        response_data = ResponseData(entity_data, {'self': url})
         data, _ = schema.dump(response_data)
 
         response = jsonify(data)
         response.headers['Location'] = url
-        response.set_etag(str(etag))
+        response.set_etag(str(entity_data.meta.etag))
         return response, 201

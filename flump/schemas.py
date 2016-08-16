@@ -55,14 +55,6 @@ def make_data_schema(
             return EntityData(data.get('id'), data['type'],
                               data['attributes'], None)
 
-        @pre_dump
-        def add_id_to_schema(self, entity_data):
-            """
-            Automagically take the ID from the entity_data attributes and
-            return a `EntityData` instance with the given ID.
-            """
-            return entity_data._replace(id=entity_data.attributes.id)
-
     return JsonApiSchema
 
 
