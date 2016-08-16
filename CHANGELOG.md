@@ -1,3 +1,10 @@
+# v0.8.0 (16/08/16)
+
+- Flump now supports running on python 2
+- EntityData is now created in it's own function, making it easier to use flump
+  with models that don't expose `.id` & `.etag` properties.
+- The test directory is no longer included in the packages in setup.py
+
 # v0.7.8 (06/07/16)
 
 - Pagination links now keep any non-pagination query string parmaeters that
