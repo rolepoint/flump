@@ -1,14 +1,44 @@
-from flask import request, jsonify
+from flask import jsonify, request
 from werkzeug.exceptions import NotFound
 
 from ..exceptions import FlumpUnprocessableEntity
-from ..schemas import (
-    ResponseData, make_entity_schema, make_data_schema, EntityMetaData
-)
+from ..schemas import ResponseData, make_data_schema, make_entity_schema
 from ..web_utils import get_json
 
 
 class Patch:
+    def patch(self, entity_id, **kwargs):
+        """
+        Handles HTTP PATCH requests.
+
+        Updates an entity based on the current schema and request json. The
+        view should provide a method for updating the entity using
+        :func:`Patch.update_entity`.
+
+        :param entity_id: The entity_id used to retrieve the entity using
+                          :func:`flump.view.FlumpView.get_entity`
+        :param \**kwargs: Any other kwargs taken from the url which are used
+                          for identifying the entity to patch.
+        """
+        entity = self.fetcher.get_entity(entity_id, **kwargs)
+        if not entity:
+            raise NotFound
+        self._verify_etag(entity)
+
+        incoming_data, errors = self._patch_schema().load(self.patch_data)
+        if errors:
+            raise FlumpUnprocessableEntity(errors=errors)
+
+        entity = self.orm_integration.update_entity(entity,
+                                                    incoming_data.attributes)
+        entity_data = self._build_entity_data(entity)
+        response_data = ResponseData(entity_data, {'self': request.url})
+
+        data, _ = self.response_schema(strict=True).dump(response_data)
+        response = jsonify(data)
+        response.set_etag(str(entity_data.meta.etag))
+        return response, 200
+
     @property
     def _patch_schema(self):
         """
@@ -32,45 +62,3 @@ class Patch:
         attributes such as api_keys.
         """
         return get_json()
-
-    def update_entity(self, existing_entity, data):
-        """
-        Should update an entity from the given data.
-
-        :param existing_entity: The instance returned from
-                                :func:`.view.FlumpView.get_entity`
-        :param data: The deserialized data dict.
-        :returns: The updated entity.
-        """
-        raise NotImplementedError
-
-    def patch(self, entity_id, **kwargs):
-        """
-        Handles HTTP PATCH requests.
-
-        Updates an entity based on the current schema and request json. The
-        view should provide a method for updating the entity using
-        :func:`Patch.update_entity`.
-
-        :param entity_id: The entity_id used to retrieve the entity using
-                          :func:`flump.view.FlumpView.get_entity`
-        :param \**kwargs: Any other kwargs taken from the url which are used
-                          for identifying the entity to patch.
-        """
-        entity = self.get_entity(entity_id, **kwargs)
-        if not entity:
-            raise NotFound
-        self._verify_etag(entity)
-
-        incoming_data, errors = self._patch_schema().load(self.patch_data)
-        if errors:
-            raise FlumpUnprocessableEntity(errors=errors)
-
-        entity = self.update_entity(entity, incoming_data.attributes)
-        entity_data = self._build_entity_data(entity)
-        response_data = ResponseData(entity_data, {'self': request.url})
-
-        data, _ = self.response_schema(strict=True).dump(response_data)
-        response = jsonify(data)
-        response.set_etag(str(entity_data.meta.etag))
-        return response, 200

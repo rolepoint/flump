@@ -1,7 +1,7 @@
 from flask import jsonify
 from werkzeug.exceptions import (Unauthorized, NotFound, Conflict,
                                  PreconditionFailed, Forbidden,
-                                 NotImplemented, UnsupportedMediaType,
+                                 MethodNotAllowed, UnsupportedMediaType,
                                  PreconditionRequired, BadRequest)
 
 from .exceptions import FlumpUnprocessableEntity
@@ -27,6 +27,11 @@ def register_error_handlers(blueprint):
     @blueprint.errorhandler(404)
     def page_not_found(e):
         return jsonify(message=str(e.description)), 404
+
+    @blueprint.errorhandler(MethodNotAllowed)
+    @blueprint.errorhandler(405)
+    def method_not_allowed(e):
+        return jsonify(message=str(e.description)), 405
 
     @blueprint.errorhandler(Conflict)
     @blueprint.errorhandler(409)
@@ -56,8 +61,3 @@ def register_error_handlers(blueprint):
     @blueprint.errorhandler(428)
     def precondition_required(e):
         return jsonify(message=str(e.description)), 428
-
-    @blueprint.errorhandler(NotImplemented)
-    @blueprint.errorhandler(501)
-    def not_implemented(e):
-        return jsonify(message=str(e.description)), 501

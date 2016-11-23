@@ -1,12 +1,11 @@
-from flask import request, jsonify
-
+from flask import jsonify, request
 from werkzeug.exceptions import NotFound
 
 from ..schemas import ResponseData
 
 
 class GetSingle:
-    def get_single(self, entity_id, **kwargs):
+    def get_single(self, entity_id=None, **kwargs):
         """
         Handles HTTP GET requests where a entity is specified.
 
@@ -21,7 +20,7 @@ class GetSingle:
         :param \**kwargs: Any other kwargs taken from the url which are used
                           for identifying the entity to retrieve.
         """
-        entity = self.get_entity(entity_id, **kwargs)
+        entity = self.fetcher.get_entity(entity_id=entity_id, **kwargs)
         if not entity:
             raise NotFound
 

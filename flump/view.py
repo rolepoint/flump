@@ -1,31 +1,169 @@
-from .base_view import BaseFlumpView
-from .methods import Patch, Delete, GetMany, GetSingle, Post
+from flask import request
+from flask.views import MethodView
+from werkzeug.exceptions import PreconditionFailed, PreconditionRequired
+
+from .methods import Delete, GetMany, GetSingle, HttpMethods, Patch, Post
+from .orm import OrmIntegration
+from .pagination import BasePagination
+from .fetcher import Fetcher
+from .schemas import (EntityData, EntityMetaData, make_data_schema,
+                      make_response_schema)
 
 
-class FlumpView(Patch, Delete, GetMany, GetSingle, Post, BaseFlumpView):
+class FlumpView(Patch, Delete, GetMany, GetSingle, Post):
     """
-    Implements Flump views using the HTTP method mixins.
+    A base view from which all views provided to `FlumpBlueprint` must
+    inherit.
 
-    Provides `GET` single and many entities, `PATCH`, `POST` and `DELETE`
-    endpoints.
+    Classes which inherit from this must override:
 
-    If a client wishes to provide an API without any of the usual HTTP methods,
-    they can inherit from BaseFlumpView, and mixin whichever HTTP methods they
-    prefer.
+    .. data:: ORM_INTEGRATION
 
-    Classes which inherit from this must provide the following methods:
+        A class which inherits from :class:`.orm.OrmIntegration`
 
-    * ``get_entity``, which retrieves a singular entity given an ``entity_id``.
+    .. data:: FETCHER
 
-    * ``delete_entity``, which deletes the given instantiated ``entity``.
+        A class which inherits from :class:`.fetcher.Fetcher`.
 
-    * ``get_many_entities``, which returns all of the entities available.
+    They also may override:
 
-    * ``get_total_entities``,  which should return a count of the total number of entities.
+    .. data:: HTTP_METHODS
 
-    Classes which inherit from this must provide or set the following properties:
+        A set containing the HTTP Methods to use. See
+        :class:`.methods.HttpMethods`
 
-    * ``SCHEMA`` The schema describing the resource. Should be an instance of
-      :class:`flump.FlumpSchema`
-    * ``RESOURCE_NAME`` The name of the resource type the API will be used for.
+    .. data:: PAGINATOR
+
+        A paginator to use, the default provides NO pagination. If overridden
+        must inherit from :class:`.paginator.BasePagination`
+
+    They MUST also provide provide `RESOURCE_NAME` & `SCHEMA` attributes that
+    specify the name of the resource, and the schema to use for
+    serialization/desieralization.
     """
+    HTTP_METHODS = HttpMethods.ALL
+    ORM_INTEGRATION = OrmIntegration
+    FETCHER = Fetcher
+    PAGINATOR = BasePagination
+
+    def get(self, entity_id=None, **kwargs):
+        """
+        Handles HTTP GET requests.
+
+        Dispatches to either
+        :func:`flump.view.FlumpView.get` or
+        :func:`flump.view.FlumpView.get_many` depending on whether an
+        `entity_id` has been provided.
+
+        :raises werkzeug.exceptions.NotImplemented: If the method requested has
+                                                    not been mixed in.
+        """
+        if entity_id:
+            return self.get_single(entity_id=entity_id, **kwargs)
+        return self.get_many(**kwargs)
+
+    @property
+    def data_schema(self):
+        """
+        A Schema describing the main jsonapi format for `SCHEMA`.
+        """
+        return make_data_schema(self.SCHEMA, self._get_sparse_fieldset())
+
+    @property
+    def response_schema(self):
+        """
+        A schema describing the format of a response according to jsonapi.
+        """
+        return make_response_schema(self.SCHEMA,
+                                    only=self._get_sparse_fieldset())
+
+    @property
+    def fetcher(self):
+        """
+        Instance cached instantiated version of :data:`.FlumpView.FETCHER`.
+        """
+        if not getattr(self, '_fetcher', None):
+            self._fetcher = self.FETCHER()
+        return self._fetcher
+
+    @property
+    def paginator(self):
+        """
+        Instance cached instantiated version of :data:`.FlumpView.PAGINATOR`.
+        """
+        if not getattr(self, '_paginator', None):
+            self._paginator = self.PAGINATOR(self.fetcher)
+        return self._paginator
+
+    @property
+    def orm_integration(self):
+        """
+        Instance cached instantiated version of :data:`.FlumpView.ORM_INTEGRATION`.
+        """
+        if not getattr(self, '_orm_integration', None):
+            self._orm_integration = self.ORM_INTEGRATION()
+        return self._orm_integration
+
+    def _get_sparse_fieldset(self):
+        """
+        Returns a list of fields which have been requested to be returned.
+        """
+        requested_fields = request.args.get(
+            'fields[{}]'.format(self.RESOURCE_NAME)
+        )
+        if requested_fields:
+            requested_fields = set(requested_fields.split(','))
+            return requested_fields
+
+    def _verify_etag(self, entity):
+        """
+        Verifies that the given etag is valid, if not raises a
+        PreconditionFailed.
+        """
+        if not request.headers.get('If-Match'):
+            raise PreconditionRequired
+
+        if not self._etag_matches(entity):
+            raise PreconditionFailed
+
+    def _get_etag(self, entity):
+        """
+        :returns: String of the etag for the given entity.
+        """
+        return str(entity.etag)
+
+    def _etag_matches(self, entity):
+        """
+        :returns: Boolean indicating whether the etag is valid.
+        """
+        return any(i in request.if_match for i in (self._get_etag(entity), '*'))  # noqa
+
+    def _build_entity_data(self, entity):
+        '''
+        Builds an EntityData struct for an entity.
+        '''
+        return EntityData(entity.id, self.RESOURCE_NAME,
+                          entity, EntityMetaData(self._get_etag(entity)))
+
+
+class _FlumpMethodView(MethodView):
+    """
+    :func:`flask.Blueprint.add_url_rule` does not allow us to pass instantiated
+    instances of :class:`MethodView` as the view_func, so instead we store the
+    instantiated instance of our route handlers on this class, and pass args
+    and kwargs through to the view methods manually.
+    """
+    def __init__(self, flump_view):
+        self.flump_view = flump_view
+
+    def get(self, *args, **kwargs):
+        return self.flump_view.get(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        return self.flump_view.post(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        return self.flump_view.delete(*args, **kwargs)
+
+    def patch(self, *args, **kwargs):
+        return self.flump_view.patch(*args, **kwargs)

@@ -2,7 +2,7 @@ import uuid
 
 from flask import Flask, request
 from flask.ext.sqlalchemy import SQLAlchemy
-from flump import FlumpView, FlumpBlueprint
+from flump import FlumpView, FlumpBlueprint, OrmIntegration, Fetcher
 from marshmallow import fields, Schema
 from werkzeug.exceptions import Unauthorized
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -13,6 +13,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/auth-test.db'
 
 # Register the app with SQLAlchemy
 db = SQLAlchemy(app)
+
+
+# Instantiate our FlumpBlueprint ready for hooking up to our Flask app.
+blueprint = FlumpBlueprint('flump-example', __name__)
 
 
 # Define our User model, we include a password field which is write only,
@@ -55,12 +59,8 @@ class UserSchema(Schema):
     password = fields.Str(load_only=True)
 
 
-# Define our FlumpView class with the necessary methods overridden.
-@blueprint.flump_view('/user/')
-class UserView(FlumpView):
-    SCHEMA = UserSchema
-    RESOURCE_NAME = 'user'
-
+# Define our Fetcher
+class SqlALchemyFetcher(Fetcher):
     def get_many_entities(self):
         return User.query.all()
 
@@ -70,6 +70,9 @@ class UserView(FlumpView):
     def get_entity(self, entity_id):
         return User.query.get(entity_id)
 
+
+# Define our Orm Integration class
+class SqlALchemyOrmIntegration(OrmIntegration):
     def delete_entity(self, entity):
         db.session.delete(entity)
 
@@ -90,6 +93,16 @@ class UserView(FlumpView):
         # can therefore return the ID.
         db.session.flush()
         return model
+
+
+# Define our FlumpView class with the necessary methods overridden.
+@blueprint.flump_view('/user/')
+class UserView(FlumpView):
+    SCHEMA = UserSchema
+    RESOURCE_NAME = 'user'
+
+    FETCHER = SqlALchemyFetcher
+    ORM_INTEGRATION = SqlALchemyOrmIntegration
 
 
 # Define some request teardown, this is necessary to either commit, or rollback

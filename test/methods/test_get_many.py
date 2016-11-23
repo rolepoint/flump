@@ -47,21 +47,28 @@ class TestGetManyDefault:
 
 
 class TestGetManyWithPagination:
-
     @pytest.fixture
-    def view_and_schema(self, view_and_schema):
-        view, schema, instances = view_and_schema
-
-        class ViewWithPagination(PageSizePagination, view):
-            DEFAULT_PAGE_SIZE = 2
-
-            def get_many_entities(self, **kwargs):
-                pagination_args = self.get_pagination_args()
+    def fetcher(self, fetcher, database):
+        class PaginatedFetcher(fetcher):
+            def get_many_entities(self, pagination_args, **kwargs):
                 chunks = [
-                    instances[i:i + pagination_args.size]
-                    for i in range(0, len(instances), pagination_args.size)
+                    database[i:i + pagination_args.size]
+                    for i in range(0, len(database), pagination_args.size)
                 ]
                 return chunks[pagination_args.page - 1]
+
+        return PaginatedFetcher
+
+    @pytest.fixture
+    def view_and_schema(self, view_and_schema, fetcher):
+        view, schema, instances = view_and_schema
+
+        class Paginator(PageSizePagination):
+            DEFAULT_PAGE_SIZE = 2
+
+        class ViewWithPagination(view):
+            PAGINATOR = Paginator
+            FETCHER = fetcher
 
         return ViewWithPagination, schema, instances
 

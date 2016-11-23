@@ -55,7 +55,7 @@ docs/_build/
 target/
 
 # OS X
-.DS_Store
+*.DS_Store
 
 .ropeproject/
 

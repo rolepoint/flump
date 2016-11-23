@@ -1,14 +1,10 @@
-from collections import namedtuple
 import uuid
-
+from collections import namedtuple
 
 from flask import Flask
-from flump import FlumpBlueprint
-from flump.base_view import BaseFlumpView
-from flump.methods.get_many import GetMany
-from flump.methods.get_single import GetSingle
-from flump.methods.post import Post
-from marshmallow import fields, Schema
+from flump import (FlumpBlueprint, FlumpView, HttpMethods, OrmIntegration,
+                   Fetcher)
+from marshmallow import Schema, fields
 
 # Our non-persistent "database"
 INSTANCES = []
@@ -25,14 +21,20 @@ class UserSchema(Schema):
     name = fields.Str(required=True)
 
 
-# Our FlumpView, as we are only supporing GET and POST, we don't need to
-# implement the `delete_entity` method. We also only inherit from the
-# BaseFlumpView class, and mixin the `Get`, `GetMany` and `Post` methods.
-@blueprint.flump_view('/user/')
-class UserView(GetMany, GetSingle, Post, BaseFlumpView):
-    SCHEMA = UserSchema
-    RESOURCE_NAME = 'user'
+# Our ORM Integration, as we are not supporting DELETE or UPDATE in this
+# example we do not need to include `delete_entity` or `update_entity` methods.
+class FakeOrm(OrmIntegration):
+    def create_entity(self, data):
+        entity = User(str(len(INSTANCES) + 1), uuid.uuid4(), data['name'])
+        INSTANCES.append(entity)
+        return entity
 
+    def update_entity(self, entity, data):
+        return entity._replace(**data)
+
+
+# Our Fetcher implementation
+class FakeFetcher(Fetcher):
     def get_entity(self, entity_id):
         try:
             _id = int(entity_id)
@@ -48,10 +50,17 @@ class UserView(GetMany, GetSingle, Post, BaseFlumpView):
     def get_many_entities(self, **kwargs):
         return INSTANCES
 
-    def create_entity(self, data):
-        entity = User(str(len(INSTANCES) + 1), uuid.uuid4(), data['name'])
-        INSTANCES.append(entity)
-        return entity
+
+# Our FlumpView, as we are only supporing GET and POST, we specify these as
+# our METHODS.
+@blueprint.flump_view('/user/')
+class UserView(FlumpView):
+    SCHEMA = UserSchema
+    RESOURCE_NAME = 'user'
+    HTTP_METHODS = HttpMethods.READ_ONLY | HttpMethods.POST
+
+    ORM_INTEGRATION = FakeOrm
+    FETCHER = FakeFetcher
 
 
 # Create our app and register our Blueprint

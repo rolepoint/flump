@@ -12,16 +12,8 @@ FlumpBlueprint
 .. autoclass:: flump.FlumpBlueprint
     :members:
 
-
-FlumpSchema
-==================
-
-.. autoclass:: flump.FlumpSchema
-    :members:
-
 FlumpView
 ==================
-
 
 .. autoclass:: flump.view.FlumpView
 
@@ -41,33 +33,30 @@ FlumpView Properties
 .. automethod:: flump.view.FlumpView.data_schema
 .. automethod:: flump.view.FlumpView.response_schema
 
-FlumpView Abstract Methods
----------------------
 
-These methods *must* be implemented by any implementation of `FlumpView`.
-
-.. automethod:: flump.view.FlumpView.get_entity
-.. automethod:: flump.view.FlumpView.delete_entity
-.. automethod:: flump.view.FlumpView.get_many_entities
-.. automethod:: flump.view.FlumpView.get_total_entities
-
-
-BaseFlumpView
+Fetcher
 ==================
 
-.. autoclass:: flump.base_view.BaseFlumpView
+.. autoclass:: flump.fetcher.Fetcher
     :members:
 
-.. _pagesizepagination:
-
-PageSizePagination
+OrmIntegration
 ==================
 
+.. autoclass:: flump.orm.OrmIntegration
+    :members:
+
+.. _pagination:
+
+Pagination
+==================
+
+.. autoclass:: flump.pagination.BasePagination
+    :members:
 .. autoclass:: flump.pagination.PageSizePagination
     :members:
 
-
-schemas
+Schemas
 =====================
 
 .. automethod:: flump.schemas.make_data_schema
@@ -78,7 +67,7 @@ schemas
 _FlumpMethodView
 ======================
 
-.. autoclass:: flump.base_view._FlumpMethodView
+.. autoclass:: flump.view._FlumpMethodView
 
 Validators
 ======================
