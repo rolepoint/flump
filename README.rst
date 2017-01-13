@@ -67,45 +67,24 @@ like:
         username = fields.Str()
         email = fields.Str()
 
-The View
-=========
+The Orm Integration
+===================
 
-We then need to hook this Schema up to a View. To do this you must provide
-a View class which inherits from ``FlumpView`` and provides the following
-methods:
-
-* ``get_entity``, which retrieves a singular entity given an ``entity_id``.
+In order to insert/update/delete entities we must define a class which
+can talk to our database. To do this we define a class which inherits from
+``flump.OrmIntegration``, and provides the following methods:
 
 * ``delete_entity``, which deletes the given instantiated ``entity``.
-
-* ``get_many_entities``, which returns all of the entities available. If you would like to paginate the entities, we provide a mixin for this purpose. See :ref:`pagesizepagination`.
-
-* ``get_total_entities``,  which should return a count of the total number of entities.
 
 * ``update_entity``, which should update the passed ``existing_entity`` and persist it in your chosen data store, then return the entity.
 
 * ``create_entity``, which should create an entity and persist it in your chosen data store, then return the entity.
 
-The View should also define ``RESOURCE_NAME`` and ``SCHEMA`` properties.
-
 .. code-block:: python
 
-    from flump import FlumpView
+    from flump import OrmIntegration
 
-    @blueprint.flump_view('/user/')
-    class UserView(FlumpView):
-        RESOURCE_NAME = 'user'
-        SCHEMA = UserSchema
-
-        def get_many_entities(self):
-            return User.query.all()
-
-        def get_total_entities(self):
-            return User.query.count()
-
-        def get_entity(self, entity_id):
-            return User.query.get(entity_id)
-
+    class UserSqlAlchemyIntegration(OrmIntegration):
         def delete_entity(self, entity):
             db.session.delete(entity)
 
@@ -121,6 +100,57 @@ The View should also define ``RESOURCE_NAME`` and ``SCHEMA`` properties.
             # Execute SQL and populate the ID field for the model
             db.session.flush()
             return model
+
+
+The Fetcher
+===========
+
+To get data from the database we must define a class which inherits from
+``flump.Fetcher`` and provides the following methods:
+
+
+* ``get_entity``, which retrieves a singular entity given an ``entity_id``.
+
+* ``get_many_entities``, which returns all of the entities available. If you would like to paginate the entities, we provide a mixin for this purpose. See :ref:`pagination`.
+
+* ``get_total_entities``,  which should return a count of the total number of entities.
+
+.. code-block:: python
+
+    from flump import Fetcher
+
+    class UserFetcher(Fetcher):
+        def get_many_entities(self):
+            return User.query.all()
+
+        def get_total_entities(self):
+            return User.query.count()
+
+        def get_entity(self, entity_id):
+            return User.query.get(entity_id)
+
+
+The View
+=========
+
+We can then tie these together to define our view. Our view must inherit
+from ``flump.FlumpView``, and define the following properties:
+
+* ``FETCHER``, the class we use to get entities.
+* ``ORM_INTEGRATION``, the class we use to update/create/delete entities.
+* ``SCHEMA``, schema which we use to marhsal/unmarshal the data.
+* ``RESOURCE_NAME``, the name of the resource, used to define the URL.
+
+.. code-block:: python
+
+    from flump import FlumpView
+
+    @blueprint.flump_view('/user/')
+    class UserView(FlumpView):
+        RESOURCE_NAME = 'user'
+        SCHEMA = UserSchema
+        FETCHER = UserFetcher
+        ORM_INTEGRATION = UserSqlAlchemyIntegration
 
 Registering The Blueprint
 ===============

@@ -1,9 +1,8 @@
 from collections import namedtuple
 import uuid
 
-
 from flask import Flask
-from flump import FlumpBlueprint, FlumpView
+from flump import FlumpBlueprint, FlumpView, OrmIntegration, Fetcher
 from flump.validators import Immutable
 from marshmallow import fields, Schema
 
@@ -25,12 +24,24 @@ class UserSchema(Schema):
     age = fields.Integer(required=True)
 
 
-# Our FlumpView, with the necessary methods implemented.
-@blueprint.flump_view('/user/')
-class UserView(FlumpView):
-    SCHEMA = UserSchema
-    RESOURCE_NAME = 'user'
+# Our ORM Integration
+class FakeOrm(OrmIntegration):
+    def delete_entity(self, entity_id):
+        INSTANCES[int(entity_id) - 1] = None
 
+    def create_entity(self, data):
+        entity = User(
+            str(len(INSTANCES) + 1), uuid.uuid4(), data['name'], data['age']
+        )
+        INSTANCES.append(entity)
+        return entity
+
+    def update_entity(self, entity, data):
+        return entity._replace(**data)
+
+
+# Our Fetcher
+class FakeFetcher(Fetcher):
     def get_entity(self, entity_id):
         try:
             _id = int(entity_id)
@@ -46,19 +57,14 @@ class UserView(FlumpView):
     def get_many_entities(self, **kwargs):
         return INSTANCES
 
-    def delete_entity(self, entity_id):
-        INSTANCES[int(entity_id) - 1] = None
 
-    def create_entity(self, data):
-        entity = User(
-            str(len(INSTANCES) + 1), uuid.uuid4(), data['name'], data['age']
-        )
-        INSTANCES.append(entity)
-        return entity
+@blueprint.flump_view('/user/')
+class UserView(FlumpView):
+    SCHEMA = UserSchema
+    RESOURCE_NAME = 'user'
 
-    def update_entity(self, entity, data):
-        return entity._replace(**data)
-
+    ORM_INTEGRATION = FakeOrm
+    FETCHER = FakeFetcher
 
 
 # Create our app and register our Blueprint

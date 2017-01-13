@@ -293,13 +293,14 @@ Which also works! Now let's see what happens when we try to update our User:
 
     $ curl -XPATCH http://localhost:5000/flump/user/1 -H "Content-Type: application/json" -d '{"data": {"attributes": {"name": "newcarl"}, "type": "user", "id": "1"}}' -H "If-Match: 3aed8692-ab10-42f2-ab67-3b24b20b8669" -i
 
-    HTTP/1.0 501 NOT IMPLEMENTED
+    HTTP/1.0 405 METHOD NOT ALLOWED
     Content-Type: application/vnd.api+json
-    Content-Length: 83
-    Server: Werkzeug/0.11 Python/3.4.2
+    Content-Length: 68
+    Server: Werkzeug/0.11.11 Python/3.5.1
+    Date: Wed, 23 Nov 2016 21:44:45 GMT
 
     {
-      "message": "The server does not support the action requested by the browser."
+      "message": "The method is not allowed for the requested URL."
     }
 
 We see that this HTTP method is not implemented. And trying to `DELETE` our User:

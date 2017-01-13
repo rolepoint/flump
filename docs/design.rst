@@ -9,7 +9,7 @@ Minimalism
 By design the `FlumpView` class does not provide many common REST API features, instead it provides easy ways to extend your application for many common use cases.
 
 Pagination
-  To implement pagination see the documentation for :ref:`pagesizepagination`.
+  To implement pagination see the documentation for :ref:`pagination`.
 
 Authentication
   Implementation is left to the developer, for an example of Basic Auth see :ref:`basic-auth-example`.
