@@ -6,7 +6,7 @@ from ..schemas import ResponseData, make_data_schema, make_entity_schema
 from ..web_utils import get_json, url_for
 
 
-class Post:
+class Post(object):
     def post(self, **kwargs):
         """
         Handles HTTP POST requests.

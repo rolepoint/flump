@@ -4,7 +4,7 @@ from werkzeug.exceptions import NotFound
 from ..schemas import ResponseData
 
 
-class GetSingle:
+class GetSingle(object):
     def get_single(self, entity_id=None, **kwargs):
         """
         Handles HTTP GET requests where a entity is specified.

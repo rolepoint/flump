@@ -6,7 +6,7 @@ from ..schemas import ResponseData, make_data_schema, make_entity_schema
 from ..web_utils import get_json
 
 
-class Patch:
+class Patch(object):
     def patch(self, entity_id, **kwargs):
         """
         Handles HTTP PATCH requests.

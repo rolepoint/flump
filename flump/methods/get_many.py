@@ -3,7 +3,7 @@ from flask import jsonify, request
 from ..schemas import ManyResponseData, make_response_schema
 
 
-class GetMany:
+class GetMany(object):
     def get_many(self, **kwargs):
         """
         Handles HTTP GET requests where no entity is specified.
