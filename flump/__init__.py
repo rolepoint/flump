@@ -23,7 +23,7 @@ from .fetcher import Fetcher
 from .view import FlumpView, _FlumpMethodView
 from .web_utils import MIMETYPE
 
-__version__ = "0.9.0"
+__version__ = "0.9.1"
 
 __all__ = ['FlumpView', 'FlumpBlueprint', 'OrmIntegration', 'Fetcher',
            'HttpMethods']

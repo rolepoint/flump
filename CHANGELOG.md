@@ -1,3 +1,7 @@
+# v0.9.1 (17/01/17)
+
+- Make HTTP method classes inherit from `object`, for better integration with python 2
+
 # v0.9.0 (13/01/17)
 
 - Refactor FlumpView construction (This is a massively breaking change.)
