@@ -159,3 +159,23 @@ class TestGetManyWithPagination:
                 'next': base_url + '?other_param=test&page%5Bnumber%5D=3&page%5Bsize%5D=3'
             }
         }
+
+    def test_invalid_page_number(self, flask_client):
+        response = flask_client.get(
+            url_for('flump.user', _method='GET'),
+            query_string='other_param=test&page[number]=0&page[size]=1'
+        )
+        assert response.status_code == 400
+        assert response.json == {
+            'message': 'Both page[number] and page[size] must be at least 1'
+        }
+
+    def test_invalid_page_size(self, flask_client):
+        response = flask_client.get(
+            url_for('flump.user', _method='GET'),
+            query_string='other_param=test&page[number]=1&page[size]=0'
+        )
+        assert response.status_code == 400
+        assert response.json == {
+            'message': 'Both page[number] and page[size] must be at least 1'
+        }
