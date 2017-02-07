@@ -1,5 +1,6 @@
 from collections import namedtuple
 from math import ceil
+from werkzeug.exceptions import BadRequest
 
 from flask import request
 
@@ -58,6 +59,11 @@ class PageSizePagination(BasePagination):
         """
         page = int(request.args.get('page[number]') or 1)
         size = int(request.args.get('page[size]') or self.DEFAULT_PAGE_SIZE)
+
+        if page < 1 or size < 1:
+            raise BadRequest(
+                "Both page[number] and page[size] must be at least 1"
+            )
 
         return PaginationArgs(max(page, 1), min(size, self.MAX_PAGE_SIZE))
 
