@@ -1,3 +1,7 @@
+# v0.10.0 (04/05/17)
+
+- Add initial URL_MAPPING feature to support custom URL schemes for views.
+
 # v0.9.1 (17/01/17)
 
 - Make HTTP method classes inherit from `object`, for better integration with python 2
