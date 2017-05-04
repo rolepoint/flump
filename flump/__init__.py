@@ -81,35 +81,21 @@ class FlumpBlueprint(Blueprint):
         # on both anyway.
         url = url.rstrip('/')
 
-        get_many_func = (
-            view_func if HttpMethods.GET_MANY < methods else _meth_not_allowed
-        )
-        self.add_url_rule(url, methods=('GET',),
-                          view_func=get_many_func, strict_slashes=False)
+        url_mapping = flump_view.URL_MAPPING
 
-        post_func = (
-            view_func if HttpMethods.POST < methods else _meth_not_allowed
-        )
-        self.add_url_rule(url, methods=('POST',),
-                          view_func=post_func, strict_slashes=False)
+        def register_endpoint(flump_method, flask_method):
+            if flump_method in url_mapping:
+                func = view_func if flump_method <= methods else _meth_not_allowed
+                self.add_url_rule(
+                    url_mapping[flump_method].format(url), methods=flask_method,
+                    view_func=func, strict_slashes=False
+                )
 
-        all_entity_methods = (
-            HttpMethods.GET | HttpMethods.PATCH | HttpMethods.DELETE
-        )
-        # Use the view_func for all entity specific methods which are defined
-        # on the FlumpView
-        entity_methods = all_entity_methods & methods
-        if entity_methods:
-            self.add_url_rule('{}/<entity_id>'.format(url),
-                              view_func=view_func, methods=entity_methods)
-
-        # Use the _meth_not_allowed function for all entity specific methods
-        # which are not defined on the FlumpView
-        not_allowed = (all_entity_methods - HttpMethods.POST -
-                       HttpMethods.GET_MANY - methods)
-        if not_allowed:
-            self.add_url_rule('{}/<entity_id>'.format(url),
-                              view_func=_meth_not_allowed, methods=not_allowed)
+        register_endpoint(HttpMethods.GET, ('GET', ))
+        register_endpoint(HttpMethods.GET_MANY, ('GET', ))
+        register_endpoint(HttpMethods.POST, ('POST', ))
+        register_endpoint(HttpMethods.PATCH, ('PATCH', ))
+        register_endpoint(HttpMethods.DELETE, ('DELETE', ))
 
     def flump_view(self, url):
         """
