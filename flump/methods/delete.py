@@ -2,7 +2,7 @@ from werkzeug.exceptions import NotFound
 
 
 class Delete(object):
-    def delete(self, entity_id, **kwargs):
+    def delete(self, entity_id=None, **kwargs):
         """
         Handles HTTP DELETE requests.
 

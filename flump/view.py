@@ -45,6 +45,13 @@ class FlumpView(Patch, Delete, GetMany, GetSingle, Post):
     ORM_INTEGRATION = OrmIntegration
     FETCHER = Fetcher
     PAGINATOR = BasePagination
+    URL_MAPPING = {
+        HttpMethods.GET: '{}/<entity_id>',
+        HttpMethods.GET_MANY: '{}',
+        HttpMethods.PATCH: '{}/<entity_id>',
+        HttpMethods.POST: '{}',
+        HttpMethods.DELETE: '{}/<entity_id>'
+    }
 
     def get(self, entity_id=None, **kwargs):
         """

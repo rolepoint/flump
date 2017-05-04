@@ -7,7 +7,7 @@ from ..web_utils import get_json
 
 
 class Patch(object):
-    def patch(self, entity_id, **kwargs):
+    def patch(self, entity_id=None, **kwargs):
         """
         Handles HTTP PATCH requests.
 
