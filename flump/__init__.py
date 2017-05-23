@@ -59,11 +59,6 @@ class FlumpBlueprint(Blueprint):
                 debug_string, request.method, request.view_args, request.data
             )
 
-        @self.after_request
-        def add_mimetype(response):
-            response.headers['Content-Type'] = MIMETYPE
-            return response
-
     def register_flump_view(self, view_class, url):
         """
         Registers the various URL rules for the given `flump_view` on the

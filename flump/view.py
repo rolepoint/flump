@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, make_response
 from flask.views import MethodView
 from werkzeug.exceptions import PreconditionFailed, PreconditionRequired
 
@@ -8,6 +8,7 @@ from .pagination import BasePagination
 from .fetcher import Fetcher
 from .schemas import (EntityData, EntityMetaData, make_data_schema,
                       make_response_schema)
+from .web_utils import MIMETYPE
 
 
 class FlumpView(Patch, Delete, GetMany, GetSingle, Post):
@@ -153,6 +154,13 @@ class FlumpView(Patch, Delete, GetMany, GetSingle, Post):
                           entity, EntityMetaData(self._get_etag(entity)))
 
 
+def _add_content_type(response):
+    response = make_response(response)
+    response.headers['Content-Type'] = MIMETYPE
+
+    return response
+
+
 class _FlumpMethodView(MethodView):
     """
     :func:`flask.Blueprint.add_url_rule` does not allow us to pass instantiated
@@ -164,13 +172,13 @@ class _FlumpMethodView(MethodView):
         self.flump_view = flump_view
 
     def get(self, *args, **kwargs):
-        return self.flump_view.get(*args, **kwargs)
+        return _add_content_type(self.flump_view.get(*args, **kwargs))
 
     def post(self, *args, **kwargs):
-        return self.flump_view.post(*args, **kwargs)
+        return _add_content_type(self.flump_view.post(*args, **kwargs))
 
     def delete(self, *args, **kwargs):
         return self.flump_view.delete(*args, **kwargs)
 
     def patch(self, *args, **kwargs):
-        return self.flump_view.patch(*args, **kwargs)
+        return _add_content_type(self.flump_view.patch(*args, **kwargs))
