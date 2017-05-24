@@ -12,10 +12,7 @@ setup(
     author_email='carl@rolepoint.com',
     packages=find_packages(exclude=['test']),
     install_requires=REQUIREMENTS,
-    keywords=[
-        'jsonapi', 'marshmallow', 'api', 'schemas', 'endpoints', 'json',
-        'rest', 'web', 'http', 'flask', 'python3', 'python2'
-    ],
+    keywords='jsonapi marshmallow api schemas endpoints json rest web http flask python3 python2',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Framework :: Flask',
