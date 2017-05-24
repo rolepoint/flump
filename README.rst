@@ -12,6 +12,16 @@ needs.
 Marshmallow is used to provide the Schemas against which data is
 validated and returned.
 
+-------
+Install
+-------
+
+``flump`` is on the Python Package Index (PyPI):
+
+::
+
+    pip install flump
+
 ----------------
 Getting Started
 ----------------
