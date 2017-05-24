@@ -1,3 +1,7 @@
+# v0.10.1 (24/05/17)
+
+- Set mimetype only if empty to support different content types.
+
 # v0.10.0 (04/05/17)
 
 - Add initial URL_MAPPING feature to support custom URL schemes for views.
