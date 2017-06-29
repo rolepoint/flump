@@ -41,6 +41,10 @@ class FlumpView(Patch, Delete, GetMany, GetSingle, Post):
     They MUST also provide provide `RESOURCE_NAME` & `SCHEMA` attributes that
     specify the name of the resource, and the schema to use for
     serialization/desieralization.
+
+    They MAY also provide a `VIEW_NAME` attribute that will be used as the name
+    of the flask view. This can be used in `url_for` calls. If not provided,
+    this will default to `RESOURCE_NAME`.
     """
     HTTP_METHODS = HttpMethods.ALL
     ORM_INTEGRATION = OrmIntegration
