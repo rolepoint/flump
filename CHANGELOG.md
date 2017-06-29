@@ -1,3 +1,9 @@
+# v0.11.0 (29/06/17)
+
+- The name of the view as passed to flask can now be customized via
+  `VIEW_NAME`.  This also allows us a single blueprint to contiain multiple
+  flump views with the same RESOURCE_NAME.
+
 # v0.10.1 (24/05/17)
 
 - Set mimetype only if empty to support different content types.
