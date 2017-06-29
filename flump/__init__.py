@@ -67,8 +67,10 @@ class FlumpBlueprint(Blueprint):
         :param flump_view: The :class:`.view.FlumpView` to register URLs for.
         """
         flump_view = view_class()
-        view_func = _FlumpMethodView.as_view(flump_view.RESOURCE_NAME,
-                                             flump_view=flump_view)
+        view_func = _FlumpMethodView.as_view(
+            getattr(flump_view, 'VIEW_NAME', flump_view.RESOURCE_NAME),
+            flump_view=flump_view
+        )
         methods = flump_view.HTTP_METHODS
 
         # Our canonical URLs do not have a trailing slash.
