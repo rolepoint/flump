@@ -21,7 +21,7 @@ from .methods import HttpMethods
 from .orm import OrmIntegration
 from .fetcher import Fetcher
 from .view import FlumpView, _FlumpMethodView
-from .web_utils import MIMETYPE
+from .web_utils import MIMETYPE  # noqa
 
 __version__ = "0.11.0"
 
@@ -34,9 +34,9 @@ class FlumpBlueprint(Blueprint):
     A specialised Flask Blueprint for Marshmallow, which provides a convenience
     method for registering FlumpView routes.
 
-    Provides some default logging, which is disabled by default. This logs the
-    request HTTP method, the kwargs passed to the view endpoint, and the
-    request JSON body.
+    :param logging: If True, Provides some default logging. This logs the
+                    request HTTP method, the kwargs passed to the view
+                    endpoint, and the request JSON body.
 
     Adds the 'application/vnd.api+json' Content-Type header to all responses.
     """
@@ -45,19 +45,18 @@ class FlumpBlueprint(Blueprint):
 
         register_error_handlers(self)
 
-        @self.before_request
-        def do_logging():
-            logger = logging.getLogger('flump.view.{}'.format(self.name))
-            logger.propagate = False
+        if kwargs.pop('logging', False):
+            @self.before_request
+            def do_logging():
+                logger = logging.getLogger('flump.view.{}'.format(self.name))
 
-            debug_string = (
-                "%s request made for resource type %s with kwargs: %s "
-                "and data: %s"
-            )
+                debug_string = (
+                    "%s request made for resource type %s with kwargs: %s "
+                    "and data: %s"
+                )
 
-            logger.debug(
-                debug_string, request.method, request.view_args, request.data
-            )
+                logger.debug(debug_string, request.method, request.view_args,
+                             request.data)
 
     def register_flump_view(self, view_class, url):
         """
