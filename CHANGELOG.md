@@ -1,3 +1,7 @@
+# v0.11.1 (17/07/17)
+
+- Add logging kwarg to FlumpBlueprint
+
 # v0.11.0 (29/06/17)
 
 - The name of the view as passed to flask can now be customized via
