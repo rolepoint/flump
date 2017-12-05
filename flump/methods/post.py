@@ -4,6 +4,7 @@ from werkzeug.exceptions import Forbidden
 from ..exceptions import FlumpUnprocessableEntity
 from ..schemas import ResponseData, make_data_schema, make_entity_schema
 from ..web_utils import get_json, url_for
+from .defs import HttpMethods
 
 
 class Post(object):
@@ -33,16 +34,22 @@ class Post(object):
 
         entity_data = self._build_entity_data(new_model)
 
-        url = url_for('.{}'.format(self.RESOURCE_NAME), _external=True,
-                      entity_id=entity_data.id, _method='GET',
-                      **kwargs)
-        schema = self.response_schema(strict=True)
+        links = {}
+        self_url = None
+        if HttpMethods.GET <= self.HTTP_METHODS:
+            self_url = url_for('.{}'.format(self.RESOURCE_NAME), _external=True,
+                               entity_id=entity_data.id, _method='GET',
+                               **kwargs)
+            links = {'self': self_url}
 
-        response_data = ResponseData(entity_data, {'self': url})
+        schema = self.response_schema(strict=True)
+        response_data = ResponseData(entity_data, links)
         data, _ = schema.dump(response_data)
 
         response = jsonify(data)
-        response.headers['Location'] = url
+        if self_url:
+            response.headers['Location'] = self_url
+
         response.set_etag(str(entity_data.meta.etag))
         return response, 201
 
