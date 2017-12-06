@@ -1,6 +1,11 @@
+import pytest
+
 import json
 
 from flump.web_utils import url_for
+from flump import FlumpView, FlumpBlueprint, HttpMethods
+
+from marshmallow import fields, Schema
 from mock import ANY
 
 from ..helpers import create_user
@@ -83,6 +88,33 @@ def test_no_redirect_with_trailing_slash(flask_client):
     url = url + '/'
     response = flask_client.post(
         url, data=json.dumps(data),
+        headers=[('Content-Type', 'application/json')]
+    )
+    assert response.status_code == 201
+
+
+@pytest.fixture
+def app(view_and_schema, app):
+    UserFlumpView, _, _ = view_and_schema
+
+    class PostOnlyView(UserFlumpView):
+        HTTP_METHODS = HttpMethods.POST
+
+    blueprint = FlumpBlueprint('post_only_blueprint', __name__)
+    blueprint.register_flump_view(PostOnlyView, '/post_only/')
+    app.register_blueprint(blueprint)
+    return app
+
+
+def test_post_only_view_works(flask_client):
+    response = flask_client.post(
+        url_for('post_only_blueprint.user', _method='POST'),
+        data=json.dumps({
+            'data': {
+                'type': 'user',
+                'attributes': {'name': 'Graeme', 'age': 100}
+            }
+        }),
         headers=[('Content-Type', 'application/json')]
     )
     assert response.status_code == 201
