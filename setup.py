@@ -6,7 +6,7 @@ REQUIREMENTS = ['marshmallow', 'flask']
 
 setup(
     name='flump',
-    version='0.11.1',
+    version='0.11.2',
     description='REST API builder using Flask routing and Marshmallow schemas.',
     author='Carl Henderson',
     author_email='carl@rolepoint.com',
@@ -27,6 +27,6 @@ setup(
     tests_require=['pytest'],
     zip_safe=False,
     include_package_data=True,
-    download_url='https://github.com/rolepoint/flump/archive/v0.10.1.tar.gz',
+    download_url='https://github.com/rolepoint/flump/archive/v0.11.2.tar.gz',
     url='https://github.com/rolepoint/flump'
 )

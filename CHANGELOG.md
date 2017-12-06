@@ -1,3 +1,7 @@
+# v0.11.2 (06/12/17)
+
+- Views that accept POST but not GET will no longer crash.
+
 # v0.11.1 (17/07/17)
 
 - Add logging kwarg to FlumpBlueprint
