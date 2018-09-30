@@ -1,2 +1,2 @@
-Flask-SQLAlchemy==2.1
+Flask-SQLAlchemy~=2.3
 -e ../.. # Installs flump as a package
