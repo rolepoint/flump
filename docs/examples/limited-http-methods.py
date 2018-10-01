@@ -47,7 +47,7 @@ class FakeFetcher(Fetcher):
     def get_total_entities(self, **kwargs):
         return len(INSTANCES)
 
-    def get_many_entities(self, **kwargs):
+    def get_many_entities(self, pagination_args, **kwargs):
         return INSTANCES
 
 

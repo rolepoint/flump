@@ -1,7 +1,7 @@
 import uuid
 
 from flask import Flask, request
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from flump import FlumpView, FlumpBlueprint, OrmIntegration, Fetcher
 from marshmallow import fields, Schema
 from werkzeug.exceptions import Unauthorized
@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 # Create a basic Flask app and set it to use SQLite.
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/auth-test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
 
 # Register the app with SQLAlchemy
 db = SQLAlchemy(app)
@@ -33,8 +33,8 @@ class User(db.Model):
     # All Flump models must have an etag field.
     etag = db.Column(db.Text)
 
-    def __init__(self, *args, password=None, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, password=None, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
         if password:
             self.password = password
 
@@ -61,7 +61,7 @@ class UserSchema(Schema):
 
 # Define our Fetcher
 class SqlALchemyFetcher(Fetcher):
-    def get_many_entities(self):
+    def get_many_entities(self, pagination_args):
         return User.query.all()
 
     def get_total_entities(self):

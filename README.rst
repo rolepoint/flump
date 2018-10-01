@@ -56,7 +56,7 @@ like:
 
 .. code-block:: python
 
-    from flask.ext.sqlalchemy import SQLAlchemy
+    from flask_sqlalchemy import SQLAlchemy
     from marshmallow import fields, Schema
 
     app = Flask(__name__)
@@ -130,7 +130,7 @@ To get data from the database we must define a class which inherits from
     from flump import Fetcher
 
     class UserFetcher(Fetcher):
-        def get_many_entities(self):
+        def get_many_entities(self, pagination_args):
             return User.query.all()
 
         def get_total_entities(self):
