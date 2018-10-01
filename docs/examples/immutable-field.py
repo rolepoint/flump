@@ -26,8 +26,8 @@ class UserSchema(Schema):
 
 # Our ORM Integration
 class FakeOrm(OrmIntegration):
-    def delete_entity(self, entity_id):
-        INSTANCES[int(entity_id) - 1] = None
+    def delete_entity(self, entity):
+        INSTANCES[int(entity.id) - 1] = None
 
     def create_entity(self, data):
         entity = User(
@@ -54,7 +54,7 @@ class FakeFetcher(Fetcher):
     def get_total_entities(self, **kwargs):
         return len(INSTANCES)
 
-    def get_many_entities(self, **kwargs):
+    def get_many_entities(self, pagination_args, **kwargs):
         return INSTANCES
 
 
