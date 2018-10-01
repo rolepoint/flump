@@ -1,7 +1,7 @@
 import uuid
 
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from flump import FlumpView, FlumpBlueprint, OrmIntegration, Fetcher
 from marshmallow import fields, Schema
 
@@ -37,7 +37,7 @@ class UserSchema(Schema):
 
 # Define our Fetcher
 class SqlALchemyFetcher(Fetcher):
-    def get_many_entities(self):
+    def get_many_entities(self, pagination_args):
         return User.query.all()
 
     def get_total_entities(self):
@@ -90,6 +90,7 @@ def teardown(exception=None):
         db.session.rollback()
     else:
         db.session.commit()
+
 
 # Register the FlumpBlueprint on our app.
 app.register_blueprint(blueprint, url_prefix='/flump')
